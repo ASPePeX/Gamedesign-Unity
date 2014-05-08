@@ -1,0 +1,22 @@
+fileFormatVersion: 2
+guid: c609c963b8379644d8239f068119ed14
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences:
+  - TileOverlayGreen: {fileID: 100000, guid: d05a81c8dfbcabd4ab4fc25234b22ff9, type: 2}
+  - TileOverlayRed: {fileID: 100000, guid: 8797f812041e3f44ca9556fe996fec62, type: 2}
+  - TileOverlayBlue: {fileID: 100000, guid: 2b0958d70f03f304caae282cb3bfd761, type: 2}
+  - TileOverlayYellow: {fileID: 100000, guid: 65bc396df3e5dca4ba414bd798016d3f, type: 2}
+  - TileOverlayGray: {fileID: 100000, guid: a181136e7f77cbc4593be1b96fb146a3, type: 2}
+  - TileOverlayBlack: {fileID: 100000, guid: 95b521012060b61469611147aa785c29, type: 2}
+  - TileOverlayHighlight: {fileID: 100000, guid: 34b5867ec55ae374b924249ea88eaaaa,
+      type: 2}
+  - TileOverlayTransparent: {fileID: 100000, guid: 348317a45716a40449a48a0aee033fe1,
+      type: 2}
+  - OverlayInstanciateTarget: {instanceID: 0}
+  - PlayerSearchTarget: {instanceID: 0}
+  - EnemySearchTarget: {instanceID: 0}
+  - ItemSearchTarget: {instanceID: 0}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 

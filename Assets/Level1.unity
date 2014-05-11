@@ -134,11 +134,11 @@ Prefab:
     m_Modifications:
     - target: {fileID: 400000, guid: e11cfc272375d9d43a9243ce80896e73, type: 2}
       propertyPath: m_LocalPosition.x
-      value: -6.23999977
+      value: -1.44000006
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: e11cfc272375d9d43a9243ce80896e73, type: 2}
       propertyPath: m_LocalPosition.y
-      value: 3.03999996
+      value: .159999996
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: e11cfc272375d9d43a9243ce80896e73, type: 2}
       propertyPath: m_LocalPosition.z
@@ -196,7 +196,7 @@ Transform:
   m_PrefabInternal: {fileID: 63957686}
   m_GameObject: {fileID: 128735193}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -6.23999977, y: 3.03999996, z: 0}
+  m_LocalPosition: {x: -1.44000006, y: .159999996, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1987696129}
@@ -446,7 +446,7 @@ Transform:
   m_PrefabInternal: {fileID: 1618924779}
   m_GameObject: {fileID: 1398020636}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -.799999952, y: .799999952, z: 0}
+  m_LocalPosition: {x: -.799999952, y: .800000012, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1551635425}
@@ -566,7 +566,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: c7620f9f0fe0c7a48aa844326e621664, type: 2}
       propertyPath: m_LocalPosition.y
-      value: .799999952
+      value: .800000012
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: c7620f9f0fe0c7a48aa844326e621664, type: 2}
       propertyPath: m_LocalPosition.z
@@ -668,21 +668,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c609c963b8379644d8239f068119ed14, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  TileOverlayGreen: {fileID: 100000, guid: d05a81c8dfbcabd4ab4fc25234b22ff9, type: 2}
-  TileOverlayRed: {fileID: 100000, guid: 8797f812041e3f44ca9556fe996fec62, type: 2}
-  TileOverlayBlue: {fileID: 100000, guid: 2b0958d70f03f304caae282cb3bfd761, type: 2}
-  TileOverlayYellow: {fileID: 100000, guid: 65bc396df3e5dca4ba414bd798016d3f, type: 2}
-  TileOverlayGray: {fileID: 100000, guid: a181136e7f77cbc4593be1b96fb146a3, type: 2}
-  TileOverlayBlack: {fileID: 100000, guid: 95b521012060b61469611147aa785c29, type: 2}
+  TileOverlay: {fileID: 100000, guid: 95b521012060b61469611147aa785c29, type: 2}
   TileOverlayHighlight: {fileID: 100000, guid: 34b5867ec55ae374b924249ea88eaaaa, type: 2}
-  TileOverlayTransparent: {fileID: 100000, guid: 348317a45716a40449a48a0aee033fe1,
-    type: 2}
   MainCamera: {fileID: 332299753}
   OverlayInstanciateTarget: {fileID: 1578038828}
   PlayerSearchTarget: {fileID: 130050680}
   EnemySearchTarget: {fileID: 1987696129}
   ItemSearchTarget: {fileID: 1551635425}
-  ActivePlayer: {fileID: 0}
+  ActivePlayer: {fileID: 1972233256}
 --- !u!1 &1972233256
 GameObject:
   m_ObjectHideFlags: 0
@@ -692,6 +685,7 @@ GameObject:
   m_Component:
   - 4: {fileID: 1972233258}
   - 212: {fileID: 1972233257}
+  - 114: {fileID: 1972233259}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -734,6 +728,17 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 130050680}
+--- !u!114 &1972233259
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1972233256}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0fcbb1ade95df8643b2f03605bc3c588, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1987696128
 GameObject:
   m_ObjectHideFlags: 0

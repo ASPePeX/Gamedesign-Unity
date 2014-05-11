@@ -1,30 +1,28 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 public class BehaviorLevel : MonoBehaviour {
 
-	private const int HorizontalTiles = 40;
-	private const int VerticalTiles = 20;
-	private const int TileSize = 32;
     private const int VisibilityRadius = 5;
 
     private bool[,] _isVisible;
     private bool[,] _wasVisible; 
     
-    private GameObject[,] _overlayBlack;
-    private GameObject[,] _overlayGray;
+    private GameObject[,] _overlay;
 
     private GameObject[,] _players;
     private GameObject[,] _items;
     private GameObject[,] _enemies;
 
-    public GameObject TileOverlayGreen;
-    public GameObject TileOverlayRed;
-    public GameObject TileOverlayBlue;
-    public GameObject TileOverlayYellow;
-    public GameObject TileOverlayGray;
-    public GameObject TileOverlayBlack;
+    public GameObject TileOverlay;
     public GameObject TileOverlayHighlight;
-    public GameObject TileOverlayTransparent;
+
+    private Color black =   new Color(0, 0, 0, 1);
+    private Color gray =    new Color(0, 0, 0, 0.6f);
+    private Color red =     new Color(1, 0, 0, 0.3f);
+    private Color green =   new Color(0, 1, 0, 0.3f);
+    private Color blue =    new Color(0, 0, 1, 0.3f);
+    private Color yellow =  new Color(1, 1, 0, 0.3f);
 
     public Camera MainCamera;
 
@@ -39,59 +37,59 @@ public class BehaviorLevel : MonoBehaviour {
 // ReSharper disable once UnusedMember.Local
     public void Start ()
     {
-        _overlayBlack = new GameObject[HorizontalTiles, VerticalTiles];
-        _overlayGray = new GameObject[HorizontalTiles, VerticalTiles];
-        _players = new GameObject[HorizontalTiles, VerticalTiles];
-        _enemies = new GameObject[HorizontalTiles, VerticalTiles];
-        _items = new GameObject[HorizontalTiles, VerticalTiles];
+        TileOverlay.GetComponent<SpriteRenderer>().color = black;
 
-        _isVisible = new bool[HorizontalTiles, VerticalTiles];
-        _wasVisible = new bool[HorizontalTiles, VerticalTiles];
+        _overlay = new GameObject[Statics.HorizontalTiles, Statics.VerticalTiles];
+        _players = new GameObject[Statics.HorizontalTiles, Statics.VerticalTiles];
+        _enemies = new GameObject[Statics.HorizontalTiles, Statics.VerticalTiles];
+        _items = new GameObject[Statics.HorizontalTiles, Statics.VerticalTiles];
 
-	    for (int i = 0; i < HorizontalTiles; i++)
+        _isVisible = new bool[Statics.HorizontalTiles, Statics.VerticalTiles];
+        _wasVisible = new bool[Statics.HorizontalTiles, Statics.VerticalTiles];
+
+        for (int i = 0; i < Statics.HorizontalTiles; i++)
 	    {
-	        for (int j = 0; j < VerticalTiles; j++)
+            for (int j = 0; j < Statics.VerticalTiles; j++)
 	        {
-	            Vector2 posXY = TileToPos(i, j);
+                Vector2 posXY = Statics.TileToPos(i, j);
 
-                _overlayBlack[i, j] = Instantiate(TileOverlayBlack, new Vector3(posXY.x, posXY.y, 0), Quaternion.identity) as GameObject;
-                _overlayBlack[i, j].transform.parent = OverlayInstanciateTarget;
-                _overlayGray[i, j] = Instantiate(TileOverlayGray, new Vector3(posXY.x, posXY.y, 0), Quaternion.identity) as GameObject;
-                _overlayGray[i, j].transform.parent = OverlayInstanciateTarget;
-            }
+                _overlay[i, j] = Instantiate(TileOverlay, new Vector3(posXY.x, posXY.y, 0), Quaternion.identity) as GameObject;
+                _overlay[i, j].transform.parent = OverlayInstanciateTarget;
+	            _overlay[i, j].name = "Tile-" + j + "x" + i;
+	        }
 	    }
 
         for (int i = 0; i < PlayerSearchTarget.childCount; i++)
         {
             GameObject player = PlayerSearchTarget.GetChild(i).gameObject;
 
-            IntVector2 tileXY = PosToTile(player.transform.position.x, player.transform.position.y);
+            IntVector2 tileXY = Statics.PosToTile(player.transform.position.x, player.transform.position.y);
 
             Debug.Log("Player " + i + ": " + tileXY);
 
-            _players[tileXY.x, tileXY.x] = player;
+            _players[tileXY.x, tileXY.y] = player;
         }
 
         for (int i = 0; i < EnemySearchTarget.childCount; i++)
         {
             GameObject enemy = EnemySearchTarget.GetChild(i).gameObject;
 
-            IntVector2 tileXY = PosToTile(enemy.transform.position.x, enemy.transform.position.y);
+            IntVector2 tileXY = Statics.PosToTile(enemy.transform.position.x, enemy.transform.position.y);
 
             Debug.Log("Enemy " + i + ": " + tileXY);
 
-            _enemies[tileXY.x, tileXY.x] = enemy;
+            _enemies[tileXY.x, tileXY.y] = enemy;
         }
 
         for (int i = 0; i < ItemSearchTarget.childCount; i++)
         {
             GameObject item = ItemSearchTarget.GetChild(i).gameObject;
 
-            IntVector2 tileXY = PosToTile(item.transform.position.x, item.transform.position.y);
+            IntVector2 tileXY = Statics.PosToTile(item.transform.position.x, item.transform.position.y);
 
             Debug.Log("Item " + i + ": " + tileXY);
 
-            _items[tileXY.x, tileXY.x] = item;
+            _items[tileXY.x, tileXY.y] = item;
         }
 
         ActivePlayer = PlayerSearchTarget.GetChild(0).gameObject;
@@ -105,13 +103,13 @@ public class BehaviorLevel : MonoBehaviour {
 	    if (Input.GetMouseButtonDown(0))
 	    {
 	        Vector2 mouseWorldPos = MainCamera.ScreenToWorldPoint(new Vector2(Input.mousePosition.x, Input.mousePosition.y));
-	        IntVector2 toTileXY = PosToTile(mouseWorldPos.x + TileSize/100f/2f, mouseWorldPos.y + TileSize/100f/2f);
-            IntVector2 fromTileXY = PosToTile(ActivePlayer.transform.position.x, ActivePlayer.transform.position.y);
+            IntVector2 toTileXY = Statics.PosToTile(mouseWorldPos.x + Statics.TileSize / 100f / 2f, mouseWorldPos.y + Statics.TileSize / 100f / 2f);
+            IntVector2 fromTileXY = Statics.PosToTile(ActivePlayer.transform.position.x, ActivePlayer.transform.position.y);
 
 	        _players[toTileXY.x, toTileXY.y] = ActivePlayer;
 	        _players[fromTileXY.x, fromTileXY.y] = null;
 
-	        Vector2 toPosXY = TileToPos(toTileXY.x, toTileXY.y);
+            Vector2 toPosXY = Statics.TileToPos(toTileXY.x, toTileXY.y);
 	        ActivePlayer.transform.position = new Vector3(toPosXY.x, toPosXY.y, 0);
 
             EvaluateTileOverlayAndVisibility();
@@ -123,9 +121,9 @@ public class BehaviorLevel : MonoBehaviour {
     {
 
         //reseting visibility
-        for (int j = 0; j < HorizontalTiles; j++)
+        for (int j = 0; j < Statics.HorizontalTiles; j++)
         {
-            for (int k = 0; k < VerticalTiles; k++)
+            for (int k = 0; k < Statics.VerticalTiles; k++)
             {
                 _isVisible[j, k] = false;
             }
@@ -136,25 +134,25 @@ public class BehaviorLevel : MonoBehaviour {
         {
             GameObject player = PlayerSearchTarget.GetChild(i).gameObject;
 
-            IntVector2 tileXY = PosToTile(player.transform.position.x, player.transform.position.y);
+            IntVector2 tileXY = Statics.PosToTile(player.transform.position.x, player.transform.position.y);
 
-            var isVisibleToPlayer = new bool[HorizontalTiles, VerticalTiles];
+            var isVisibleToPlayer = new bool[Statics.HorizontalTiles, Statics.VerticalTiles];
 
-            for (int j = 0; j < HorizontalTiles; j++)
+            for (int j = 0; j < Statics.HorizontalTiles; j++)
             {
-                for (int k = 0; k < VerticalTiles; k++)
+                for (int k = 0; k < Statics.VerticalTiles; k++)
                 {
                     if (Mathf.Sqrt(Mathf.Pow(j - tileXY.x, 2) + Mathf.Pow(k - tileXY.y, 2)) < VisibilityRadius)
                     {
-                        Debug.Log(j + " " + k +" " +Mathf.Sqrt(Mathf.Pow(j - tileXY.x, 2) + Mathf.Pow(k - tileXY.y, 2)));
+                        //Debug.Log(j + " " + k +" " +Mathf.Sqrt(Mathf.Pow(j - tileXY.x, 2) + Mathf.Pow(k - tileXY.y, 2)));
                         isVisibleToPlayer[j, k] = true;
                     }
                 }
             }
 
-            for (int j = 0; j < HorizontalTiles; j++)
+            for (int j = 0; j < Statics.HorizontalTiles; j++)
             {
-                for (int k = 0; k < VerticalTiles; k++)
+                for (int k = 0; k < Statics.VerticalTiles; k++)
                 {
                     if (isVisibleToPlayer[j, k])
                     {
@@ -165,24 +163,19 @@ public class BehaviorLevel : MonoBehaviour {
             }
         }
 
-        //Overlay GameObjects are set active according to visibility
-        for (int j = 0; j < HorizontalTiles; j++)
+        //Evaluate visibility to tile color
+        for (int j = 0; j < Statics.HorizontalTiles; j++)
         {
-            for (int k = 0; k < VerticalTiles; k++)
+            for (int k = 0; k < Statics.VerticalTiles; k++)
             {
                 if (_isVisible[j, k])
                 {
-                    _overlayBlack[j, k].SetActive(false);
-                    _overlayGray[j, k].SetActive(false);
+                    _overlay[j, k].SetActive(false);
                 }
                 else if (_wasVisible[j,k])
                 {
-                    _overlayBlack[j, k].SetActive(false);
-                    _overlayGray[j, k].SetActive(true);
-                }
-                else
-                {
-                    _overlayGray[j, k].SetActive(true);
+                    _overlay[j, k].SetActive(true);
+                    _overlay[j, k].GetComponent<SpriteRenderer>().color = gray;
                 }
             }
         }
@@ -192,7 +185,7 @@ public class BehaviorLevel : MonoBehaviour {
         {
             GameObject enemy = EnemySearchTarget.GetChild(i).gameObject;
 
-            IntVector2 tileXY = PosToTile(enemy.transform.position.x, enemy.transform.position.y);
+            IntVector2 tileXY = Statics.PosToTile(enemy.transform.position.x, enemy.transform.position.y);
 
             enemy.SetActive(_isVisible[tileXY.x, tileXY.y]);
         }
@@ -202,21 +195,51 @@ public class BehaviorLevel : MonoBehaviour {
         {
             GameObject item = ItemSearchTarget.GetChild(i).gameObject;
 
-            IntVector2 tileXY = PosToTile(item.transform.position.x, item.transform.position.y);
+            IntVector2 tileXY = Statics.PosToTile(item.transform.position.x, item.transform.position.y);
 
             item.SetActive(_isVisible[tileXY.x, tileXY.y]);
         }
     }
 
-    public IntVector2 PosToTile(float posX, float posY)
+    public void DrawMovement(string positionString)
     {
-        return new IntVector2(Mathf.Clamp(Mathf.FloorToInt((posX + (TileSize / 100f / 2f * (HorizontalTiles - 1))) / (TileSize / 100f)), 0, HorizontalTiles-1), Mathf.Clamp(Mathf.FloorToInt((posY + (TileSize / 100f / 2f * (VerticalTiles - 1))) / (TileSize / 100f)), 0, VerticalTiles-1));
+        EvaluateTileOverlayAndVisibility();
+
+        //Todo: Input validation!
+        string[] msg = positionString.Split('x');
+        IntVector2 centerPosition = new IntVector2(Convert.ToInt32(msg[0]), Convert.ToInt32(msg[1]));
+        int actionPoints = Convert.ToInt32(msg[2]);
+
+        //doesn't cover reset for overlapping visibility Todo: make better
+        for (int j = 0; j < Statics.HorizontalTiles; j++)
+        {
+            for (int k = 0; k < Statics.VerticalTiles; k++)
+            {
+                //Debug.Log(Mathf.Sqrt(Mathf.Pow(j - centerPosition.x, 2) + Mathf.Pow(k - centerPosition.y, 2)) * 2);
+                if (Mathf.Sqrt(Mathf.Pow(j - centerPosition.x, 2) + Mathf.Pow(k - centerPosition.y, 2))*2 < actionPoints)
+                {
+                    if (_items[j, k] == null && _enemies[j, k] == null)
+                    {
+                        _overlay[j, k].GetComponent<SpriteRenderer>().color = green;
+                        _overlay[j, k].SetActive(true);
+                    }
+                    else if (_items[j, k])
+                    {
+                        _overlay[j, k].GetComponent<SpriteRenderer>().color = yellow;
+                        _overlay[j, k].SetActive(true);                        
+                    }
+                    else if (_enemies[j, k])
+                    {
+                        _overlay[j, k].GetComponent<SpriteRenderer>().color = red;
+                        _overlay[j, k].SetActive(true);                        
+                    }
+                     
+                }
+            }
+        }
+
     }
 
-    public Vector2 TileToPos(int tileX, int tileY)
-    {
-        return new Vector2(tileX * (TileSize / 100f) - (TileSize / 100f / 2f * (HorizontalTiles - 1)), tileY * (TileSize / 100f) - (TileSize / 100f / 2f * (VerticalTiles - 1)));
-    }
 }
 
 public struct IntVector2

@@ -19,12 +19,13 @@ public class BehaviorLevel : MonoBehaviour {
     public GameObject TileOverlay;
     public GameObject TileOverlayHighlight;
 
-    private Color black =   new Color(0, 0, 0, 1);
-    private Color gray =    new Color(0, 0, 0, 0.6f);
-    private Color red =     new Color(1, 0, 0, 0.3f);
-    private Color green =   new Color(0, 1, 0, 0.3f);
-    private Color blue =    new Color(0, 0, 1, 0.3f);
-    private Color yellow =  new Color(1, 1, 0, 0.3f);
+    private readonly Color _black =         new Color(0, 0, 0, 1);
+    private readonly Color _gray =          new Color(0, 0, 0, 0.6f);
+    private readonly Color _red =           new Color(1, 0, 0, 0.3f);
+    private readonly Color _lightGreen =    new Color(0, 1, 0, 0.2f);
+    private readonly Color _darkGreen =     new Color(0, 1, 0, 0.5f);
+    private readonly Color _blue =          new Color(0, 0, 1, 0.3f);
+    private readonly Color _yellow =        new Color(1, 1, 0, 0.3f);
 
     public Camera MainCamera;
 
@@ -83,7 +84,7 @@ public class BehaviorLevel : MonoBehaviour {
             {true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true}
         };
 
-        TileOverlay.GetComponent<SpriteRenderer>().color = black;
+        TileOverlay.GetComponent<SpriteRenderer>().color = _black;
 
         _overlay = new GameObject[Statics.HorizontalTiles, Statics.VerticalTiles];
         _players = new GameObject[Statics.HorizontalTiles, Statics.VerticalTiles];
@@ -152,14 +153,16 @@ public class BehaviorLevel : MonoBehaviour {
             IntVector2 toTileXY = Statics.PosToTile(mouseWorldPos.x + Statics.TileSize / 100f / 2f, mouseWorldPos.y + Statics.TileSize / 100f / 2f);
             IntVector2 fromTileXY = Statics.PosToTile(ActivePlayer.transform.position.x, ActivePlayer.transform.position.y);
 
-	        _players[toTileXY.x, toTileXY.y] = ActivePlayer;
-	        _players[fromTileXY.x, fromTileXY.y] = null;
+	        if (_isTraversable[toTileXY.x, toTileXY.y] && _enemies[toTileXY.x, toTileXY.y] == null && _items[toTileXY.x, toTileXY.y] == null)
+	        {
+	            _players[toTileXY.x, toTileXY.y] = ActivePlayer;
+	            _players[fromTileXY.x, fromTileXY.y] = null;
 
-            Vector2 toPosXY = Statics.TileToPos(toTileXY.x, toTileXY.y);
-	        ActivePlayer.transform.position = new Vector3(toPosXY.x, toPosXY.y, 0);
+	            Vector2 toPosXY = Statics.TileToPos(toTileXY.x, toTileXY.y);
+	            ActivePlayer.transform.position = new Vector3(toPosXY.x, toPosXY.y, 0);
 
-            EvaluateTileOverlayAndVisibility();
-
+	            EvaluateTileOverlayAndVisibility();
+	        }
 	    }
 	}
 
@@ -221,7 +224,7 @@ public class BehaviorLevel : MonoBehaviour {
                 else if (_wasVisible[j,k])
                 {
                     _overlay[j, k].SetActive(true);
-                    _overlay[j, k].GetComponent<SpriteRenderer>().color = gray;
+                    _overlay[j, k].GetComponent<SpriteRenderer>().color = _gray;
                 }
             }
         }
@@ -268,17 +271,17 @@ public class BehaviorLevel : MonoBehaviour {
                     {
                         if (_items[j, k] == null && _enemies[j, k] == null)
                         {
-                            _overlay[j, k].GetComponent<SpriteRenderer>().color = green;
+                            _overlay[j, k].GetComponent<SpriteRenderer>().color = _lightGreen;
                             _overlay[j, k].SetActive(true);
                         }
                         else if (_items[j, k])
                         {
-                            _overlay[j, k].GetComponent<SpriteRenderer>().color = yellow;
+                            _overlay[j, k].GetComponent<SpriteRenderer>().color = _yellow;
                             _overlay[j, k].SetActive(true);
                         }
                         else if (_enemies[j, k])
                         {
-                            _overlay[j, k].GetComponent<SpriteRenderer>().color = red;
+                            _overlay[j, k].GetComponent<SpriteRenderer>().color = _red;
                             _overlay[j, k].SetActive(true);
                         }
                     }

@@ -10,7 +10,7 @@ GameObject:
   - 4: {fileID: 400000}
   - 212: {fileID: 21200000}
   m_Layer: 0
-  m_Name: Tile-Overlay-Yellow
+  m_Name: Tile-Overlay
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -23,7 +23,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 100000}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -2.26263261, y: 3.35778832, z: -10.0567369}
+  m_LocalPosition: {x: -.807035208, y: -.719103098, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -49,7 +49,7 @@ SpriteRenderer:
   m_SortingOrder: 0
   m_SortingLayerID: 1482176897
   m_Sprite: {fileID: 21300000, guid: b68705df78545724eb40103e2542733e, type: 3}
-  m_Color: {r: 1, g: 1, b: 0, a: .294117659}
+  m_Color: {r: 0, g: 0, b: 0, a: 1}
 --- !u!1001 &100100000
 Prefab:
   m_ObjectHideFlags: 1

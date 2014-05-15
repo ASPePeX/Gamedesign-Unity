@@ -6,7 +6,9 @@ public class BehaviorLevel : MonoBehaviour {
     private const int VisibilityRadius = 5;
 
     private bool[,] _isVisible;
-    private bool[,] _wasVisible; 
+    private bool[,] _wasVisible;
+
+    private bool[,] _isTraversable;
     
     private GameObject[,] _overlay;
 
@@ -37,6 +39,50 @@ public class BehaviorLevel : MonoBehaviour {
 // ReSharper disable once UnusedMember.Local
     public void Start ()
     {
+        _isTraversable = new bool[,]
+        {
+            {true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true},
+            {true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true},
+            {true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true},
+            {true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true},
+            {true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true},
+            {true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true},
+            {true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true},
+            {true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true},
+            {true, true, true, true, true, true, true, true, false, false, false, false, false, false, true, true, true, true, true, true},
+            {true, true, true, true, true, true, true, true, false, false, false, false, false, false, true, true, true, true, true, true},
+            {true, true, true, true, true, true, true, true, false, false, false, false, false, false, true, true, true, true, true, true},
+            {true, true, true, true, true, true, true, true, false, false, false, false, false, false, true, true, true, true, true, true},
+            {true, true, true, true, true, true, true, true, false, false, true, true, false, false, true, true, true, true, true, true},
+            {true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true},
+            {true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true},
+            {true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true},
+            {true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true},
+            {true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true},
+            {true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true},
+            {true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true},
+            {true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true},
+            {true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true},
+            {true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true},
+            {true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true},
+            {true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true},
+            {true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true},
+            {true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true},
+            {true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true},
+            {true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true},
+            {true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true},
+            {true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true},
+            {true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true},
+            {true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true},
+            {true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true},
+            {true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true},
+            {true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true},
+            {true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true},
+            {true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true},
+            {true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true},
+            {true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true}
+        };
+
         TileOverlay.GetComponent<SpriteRenderer>().color = black;
 
         _overlay = new GameObject[Statics.HorizontalTiles, Statics.VerticalTiles];
@@ -218,22 +264,25 @@ public class BehaviorLevel : MonoBehaviour {
                 //Debug.Log(Mathf.Sqrt(Mathf.Pow(j - centerPosition.x, 2) + Mathf.Pow(k - centerPosition.y, 2)) * 2);
                 if (Mathf.Sqrt(Mathf.Pow(j - centerPosition.x, 2) + Mathf.Pow(k - centerPosition.y, 2))*2 < actionPoints)
                 {
-                    if (_items[j, k] == null && _enemies[j, k] == null)
+                    if (_isTraversable[j, k])
                     {
-                        _overlay[j, k].GetComponent<SpriteRenderer>().color = green;
-                        _overlay[j, k].SetActive(true);
+                        if (_items[j, k] == null && _enemies[j, k] == null)
+                        {
+                            _overlay[j, k].GetComponent<SpriteRenderer>().color = green;
+                            _overlay[j, k].SetActive(true);
+                        }
+                        else if (_items[j, k])
+                        {
+                            _overlay[j, k].GetComponent<SpriteRenderer>().color = yellow;
+                            _overlay[j, k].SetActive(true);
+                        }
+                        else if (_enemies[j, k])
+                        {
+                            _overlay[j, k].GetComponent<SpriteRenderer>().color = red;
+                            _overlay[j, k].SetActive(true);
+                        }
                     }
-                    else if (_items[j, k])
-                    {
-                        _overlay[j, k].GetComponent<SpriteRenderer>().color = yellow;
-                        _overlay[j, k].SetActive(true);                        
-                    }
-                    else if (_enemies[j, k])
-                    {
-                        _overlay[j, k].GetComponent<SpriteRenderer>().color = red;
-                        _overlay[j, k].SetActive(true);                        
-                    }
-                     
+
                 }
             }
         }

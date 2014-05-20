@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reflection;
 using UnityEngine;
 
 public class BehaviorLevel : MonoBehaviour {
@@ -12,34 +13,27 @@ public class BehaviorLevel : MonoBehaviour {
     
     private GameObject[,] _overlay;
 
-    private GameObject[,] _players;
+    private GameObject[] _players;
     private GameObject[,] _items;
     private GameObject[,] _enemies;
+    private GameObject _activePlayer;
 
     public GameObject TileOverlay;
     public GameObject TileOverlayHighlight;
-
-    private readonly Color _black =         new Color(0, 0, 0, 1);
-    private readonly Color _gray =          new Color(0, 0, 0, 0.6f);
-    private readonly Color _red =           new Color(1, 0, 0, 0.3f);
-    private readonly Color _lightGreen =    new Color(0, 1, 0, 0.2f);
-    private readonly Color _darkGreen =     new Color(0, 1, 0, 0.5f);
-    private readonly Color _blue =          new Color(0, 0, 1, 0.3f);
-    private readonly Color _yellow =        new Color(1, 1, 0, 0.3f);
+    public GameObject PlayerGhost;
 
     public Camera MainCamera;
 
     public Transform OverlayInstanciateTarget;
+    public Transform InstanciateTarget;
     public Transform PlayerSearchTarget;
     public Transform EnemySearchTarget;
     public Transform ItemSearchTarget;
 
-    //test variables
-    public GameObject ActivePlayer;
-
 // ReSharper disable once UnusedMember.Local
     public void Start ()
     {
+        #region _istraversable
         _isTraversable = new bool[,]
         {
             {true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true},
@@ -83,13 +77,15 @@ public class BehaviorLevel : MonoBehaviour {
             {true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true},
             {true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true}
         };
+        #endregion
 
-        TileOverlay.GetComponent<SpriteRenderer>().color = _black;
+        TileOverlay.GetComponent<SpriteRenderer>().color = Statics.Black;
 
         _overlay = new GameObject[Statics.HorizontalTiles, Statics.VerticalTiles];
-        _players = new GameObject[Statics.HorizontalTiles, Statics.VerticalTiles];
+        _players = new GameObject[PlayerSearchTarget.childCount];
         _enemies = new GameObject[Statics.HorizontalTiles, Statics.VerticalTiles];
         _items = new GameObject[Statics.HorizontalTiles, Statics.VerticalTiles];
+//        _activePlayer = new GameObject();
 
         _isVisible = new bool[Statics.HorizontalTiles, Statics.VerticalTiles];
         _wasVisible = new bool[Statics.HorizontalTiles, Statics.VerticalTiles];
@@ -108,13 +104,7 @@ public class BehaviorLevel : MonoBehaviour {
 
         for (int i = 0; i < PlayerSearchTarget.childCount; i++)
         {
-            GameObject player = PlayerSearchTarget.GetChild(i).gameObject;
-
-            IntVector2 tileXY = Statics.PosToTile(player.transform.position.x, player.transform.position.y);
-
-            Debug.Log("Player " + i + ": " + tileXY);
-
-            _players[tileXY.x, tileXY.y] = player;
+            _players[i] = PlayerSearchTarget.GetChild(i).gameObject;
         }
 
         for (int i = 0; i < EnemySearchTarget.childCount; i++)
@@ -139,8 +129,6 @@ public class BehaviorLevel : MonoBehaviour {
             _items[tileXY.x, tileXY.y] = item;
         }
 
-        ActivePlayer = PlayerSearchTarget.GetChild(0).gameObject;
-
         EvaluateTileOverlayAndVisibility();
 
     }
@@ -150,19 +138,42 @@ public class BehaviorLevel : MonoBehaviour {
 	    if (Input.GetMouseButtonDown(0))
 	    {
 	        Vector2 mouseWorldPos = MainCamera.ScreenToWorldPoint(new Vector2(Input.mousePosition.x, Input.mousePosition.y));
-            IntVector2 toTileXY = Statics.PosToTile(mouseWorldPos.x + Statics.TileSize / 100f / 2f, mouseWorldPos.y + Statics.TileSize / 100f / 2f);
-            IntVector2 fromTileXY = Statics.PosToTile(ActivePlayer.transform.position.x, ActivePlayer.transform.position.y);
+            IntVector2 clickTilePosition = Statics.PosToTile(mouseWorldPos.x + Statics.TileSize / 100f / 2f, mouseWorldPos.y + Statics.TileSize / 100f / 2f);
 
-	        if (_isTraversable[toTileXY.x, toTileXY.y] && _enemies[toTileXY.x, toTileXY.y] == null && _items[toTileXY.x, toTileXY.y] == null)
+            //If no player is active, select an active player
+	        if (_activePlayer == null)
 	        {
-	            _players[toTileXY.x, toTileXY.y] = ActivePlayer;
-	            _players[fromTileXY.x, fromTileXY.y] = null;
+	            for (int i = 0; i < _players.Length; i++)
+	            {
+	                PlayerActions currentPlayerScript = (PlayerActions) _players[i].GetComponent(typeof (PlayerActions));
 
-	            Vector2 toPosXY = Statics.TileToPos(toTileXY.x, toTileXY.y);
-	            ActivePlayer.transform.position = new Vector3(toPosXY.x, toPosXY.y, 0);
-
-	            EvaluateTileOverlayAndVisibility();
+                    if (currentPlayerScript.StartPosition.Equals(clickTilePosition))
+                    {
+                        _activePlayer = _players[i];
+                        currentPlayerScript.Active = true;
+                        DrawMovement(currentPlayerScript.StartPosition, currentPlayerScript.ActionPoints);
+                    }
+	            }
 	        }
+            //If we have an active player ...
+	        else
+	        {
+	            PlayerActions activePlayerScript = (PlayerActions) _activePlayer.GetComponent(typeof (PlayerActions));
+
+	            if (MovingToTileCost(clickTilePosition, _activePlayer) <= activePlayerScript.ActionPoints && _isTraversable[clickTilePosition.x, clickTilePosition.y] && _items[clickTilePosition.x, clickTilePosition.y] == null && _enemies[clickTilePosition.x, clickTilePosition.y] == null)
+	            {
+                    Vector2 posXY = Statics.TileToPos(clickTilePosition.x, clickTilePosition.y);
+                    var playerGhost = Instantiate(PlayerGhost, new Vector3(posXY.x, posXY.y, 0), Quaternion.identity) as GameObject;
+	                playerGhost.transform.parent = InstanciateTarget;
+
+                    activePlayerScript.ActionPoints -= MovingToTileCost(clickTilePosition, _activePlayer);
+                    activePlayerScript.FinalPosition = clickTilePosition;
+
+                    DrawMovement(clickTilePosition, activePlayerScript.ActionPoints);
+                }
+	        }
+
+
 	    }
 	}
 
@@ -224,7 +235,7 @@ public class BehaviorLevel : MonoBehaviour {
                 else if (_wasVisible[j,k])
                 {
                     _overlay[j, k].SetActive(true);
-                    _overlay[j, k].GetComponent<SpriteRenderer>().color = _gray;
+                    _overlay[j, k].GetComponent<SpriteRenderer>().color = Statics.Gray;
                 }
             }
         }
@@ -250,20 +261,19 @@ public class BehaviorLevel : MonoBehaviour {
         }
     }
 
-    public void DrawMovement(string positionString)
+    public void DrawMovement(IntVector2 centerPosition, int actionPoints)
     {
-        EvaluateTileOverlayAndVisibility();
 
-        //Todo: Input validation!
-        string[] msg = positionString.Split('x');
-        IntVector2 centerPosition = new IntVector2(Convert.ToInt32(msg[0]), Convert.ToInt32(msg[1]));
-        int actionPoints = Convert.ToInt32(msg[2]);
 
-        //doesn't cover reset for overlapping visibility Todo: make better
+
         for (int j = 0; j < Statics.HorizontalTiles; j++)
         {
             for (int k = 0; k < Statics.VerticalTiles; k++)
             {
+                //Reset previous movement draw
+                if (_overlay[j, k].GetComponent<SpriteRenderer>().color == Statics.LightGreen || _overlay[j, k].GetComponent<SpriteRenderer>().color == Statics.Yellow || _overlay[j, k].GetComponent<SpriteRenderer>().color == Statics.Red)
+                    _overlay[j, k].SetActive(false);
+
                 //Debug.Log(Mathf.Sqrt(Mathf.Pow(j - centerPosition.x, 2) + Mathf.Pow(k - centerPosition.y, 2)) * 2);
                 if (Mathf.Sqrt(Mathf.Pow(j - centerPosition.x, 2) + Mathf.Pow(k - centerPosition.y, 2))*2 < actionPoints)
                 {
@@ -271,17 +281,17 @@ public class BehaviorLevel : MonoBehaviour {
                     {
                         if (_items[j, k] == null && _enemies[j, k] == null)
                         {
-                            _overlay[j, k].GetComponent<SpriteRenderer>().color = _lightGreen;
+                            _overlay[j, k].GetComponent<SpriteRenderer>().color = Statics.LightGreen;
                             _overlay[j, k].SetActive(true);
                         }
                         else if (_items[j, k])
                         {
-                            _overlay[j, k].GetComponent<SpriteRenderer>().color = _yellow;
+                            _overlay[j, k].GetComponent<SpriteRenderer>().color = Statics.Yellow;
                             _overlay[j, k].SetActive(true);
                         }
                         else if (_enemies[j, k])
                         {
-                            _overlay[j, k].GetComponent<SpriteRenderer>().color = _red;
+                            _overlay[j, k].GetComponent<SpriteRenderer>().color = Statics.Red;
                             _overlay[j, k].SetActive(true);
                         }
                     }
@@ -292,31 +302,13 @@ public class BehaviorLevel : MonoBehaviour {
 
     }
 
-}
-
-public struct IntVector2
-{
-// ReSharper disable once InconsistentNaming
-    public int x { get; set; }
-// ReSharper disable once InconsistentNaming
-    public int y { get; set; }
-
-    public IntVector2(int x, int y)
-        : this()
+    public int MovingToTileCost(IntVector2 tileTargetPosition, GameObject player)
     {
-        this.x = x;
-        this.y = y;
-    }
+        PlayerActions playerScript = (PlayerActions) player.GetComponent(typeof (PlayerActions));
 
-// ReSharper disable once UnusedMember.Local
-    int SqrMagnitude
-    {
-        get { return x * x + y * y; }
-    }
+        //Debug.Log(Math.Ceiling(Mathf.Sqrt(Mathf.Pow(playerScript.FinalPosition.x - tileTargetPosition.x, 2) + Mathf.Pow(playerScript.FinalPosition.y - tileTargetPosition.y, 2)) * 2));
 
-    public override string ToString()
-    {
-        return x + ", " + y;
+        return (int) Math.Ceiling(Mathf.Sqrt(Mathf.Pow(playerScript.FinalPosition.x - tileTargetPosition.x, 2) + Mathf.Pow(playerScript.FinalPosition.y - tileTargetPosition.y, 2)) * 2);
     }
 
 }

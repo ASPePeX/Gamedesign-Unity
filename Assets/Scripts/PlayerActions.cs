@@ -12,17 +12,46 @@ public class PlayerActions : MonoBehaviour
 
     private GameObject _level;
 
+    public bool Active
+    {
+        get { return _active; }
+        set { _active = value; }
+    }
+
+    public bool RoundFinished
+    {
+        get { return _roundFinished; }
+        set { _roundFinished = value; }
+    }
+
+    public IntVector2 StartPosition
+    {
+        get { return _startPosition; }
+        set { _startPosition = value; }
+    }
+
+    public IntVector2 FinalPosition
+    {
+        get { return _finalPosition; }
+        set { _finalPosition = value; }
+    }
+
+    public int ActionPoints
+    {
+        get { return _actionPoints; }
+        set { _actionPoints = value; }
+    }
+
     // Use this for initialization
 	void Start ()
 	{
-	    _active = true;
 	    _level = GameObject.Find("/Level");
 
         RoundStart();
 	}
 	
 	// Update is called once per frame
-	void Update () {
+/*	void Update () {
 
 	    if (_active)
 	    {
@@ -32,21 +61,21 @@ public class PlayerActions : MonoBehaviour
                 showMovement();
 	        }
 	    }
-	}
+	}*/
 
     private void showMovement()
     {
-       SendMessageUpwards("DrawMovement", _finalPosition.x + "x" + _finalPosition.y + "x" + _actionPoints, SendMessageOptions.RequireReceiver);
+       SendMessageUpwards("DrawMovement", FinalPosition.x + "x" + FinalPosition.y + "x" + ActionPoints, SendMessageOptions.RequireReceiver);
     }
 
     //called by the rounds manager (todo)
     public void RoundStart()
     {
-        _startPosition = Statics.PosToTile(this.transform.position.x, this.transform.position.y);
-        _finalPosition = _startPosition;
+        StartPosition = Statics.PosToTile(this.transform.position.x, this.transform.position.y);
+        FinalPosition = StartPosition;
 
-        _actionPoints = Statics.ActionPoints;
+        ActionPoints = Statics.ActionPoints;
 
-        _roundFinished = false;
+        RoundFinished = false;
     }
 }

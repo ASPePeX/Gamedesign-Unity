@@ -1,7 +1,10 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 public class PlayerActions : MonoBehaviour
 {
+    public GameObject PlayerGhost;
+
     private bool _active;
     private bool _roundFinished;
 
@@ -9,8 +12,10 @@ public class PlayerActions : MonoBehaviour
 
     private IntVector2 _startPosition;
     private IntVector2 _finalPosition;
+    private List<GameObject> _ghosts;
 
     private GameObject _level;
+
 
     public bool Active
     {
@@ -42,10 +47,70 @@ public class PlayerActions : MonoBehaviour
         set { _actionPoints = value; }
     }
 
+    public void AddGhost(IntVector2 instantiatePosition)
+    {
+        Vector2 posXY = Statics.TileToPos(instantiatePosition.x, instantiatePosition.y);
+
+        var newGhost = Instantiate(PlayerGhost, new Vector3(posXY.x, posXY.y, 0), Quaternion.identity) as GameObject;
+        newGhost.transform.parent = this.transform;
+        _ghosts.Add(newGhost);
+    }
+
+    public bool CheckIfGhost(IntVector2 checkPosition)
+    {
+        for (int i = 0; i < _ghosts.Count; i++)
+        {
+            if (Statics.PosToTile(_ghosts[i].transform.position.x, _ghosts[i].transform.position.y).Equals(checkPosition))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public IntVector2 RemoveGhosts(IntVector2 removePosition)
+    {
+        bool found = false;
+        for (int i = _ghosts.Count - 1; i > -1; i--)
+        {
+            if (Statics.PosToTile(_ghosts[i].transform.position.x, _ghosts[i].transform.position.y).Equals(removePosition))
+            {
+                found = true;
+            }
+
+            Destroy(_ghosts[i]);
+            _ghosts.RemoveAt(i);
+
+            if (found)
+            {
+                if (i > 0)
+                {
+                    FinalPosition = Statics.PosToTile(_ghosts[i - 1].transform.position.x, _ghosts[i - 1].transform.position.y);
+                    ActionPoints = Statics.ActionPoints - Statics.MovingToTileCost(Statics.PosToTile(_ghosts[i - 1].transform.position.x, _ghosts[i - 1].transform.position.y), Statics.PosToTile(this.transform.position.x, this.transform.position.y));
+                }
+                else
+                {
+                    RoundStart();
+                }
+
+
+                break;
+            }
+
+        }
+        return FinalPosition;
+    }
+
+    public void ClearGhosts()
+    {
+        RoundStart();
+    }
+
     // Use this for initialization
 	void Start ()
 	{
 	    _level = GameObject.Find("/Level");
+        _ghosts = new List<GameObject>();
 
         RoundStart();
 	}
@@ -73,6 +138,12 @@ public class PlayerActions : MonoBehaviour
     {
         StartPosition = Statics.PosToTile(this.transform.position.x, this.transform.position.y);
         FinalPosition = StartPosition;
+
+        for (int i = 0; i < _ghosts.Count; i++)
+        {
+            Destroy(_ghosts[i]);
+        }
+        _ghosts.Clear();
 
         ActionPoints = Statics.ActionPoints;
 

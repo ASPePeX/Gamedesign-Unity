@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 public static class Statics
 {
@@ -89,6 +90,20 @@ public static class Statics
     {
         return new Vector2(tileX * (TileSize / 100f) - (TileSize / 100f / 2f * (HorizontalTiles - 1)), tileY * (TileSize / 100f) - (TileSize / 100f / 2f * (VerticalTiles - 1)));
     }
+
+    public static int MovingToTileCost(IntVector2 tileTargetPosition, GameObject player)
+    {
+        PlayerActions playerScript = (PlayerActions)player.GetComponent(typeof(PlayerActions));
+
+        //Debug.Log(Math.Ceiling(Mathf.Sqrt(Mathf.Pow(playerScript.FinalPosition.x - tileTargetPosition.x, 2) + Mathf.Pow(playerScript.FinalPosition.y - tileTargetPosition.y, 2)) * 2));
+
+        return (int)Math.Ceiling(Mathf.Sqrt(Mathf.Pow(playerScript.FinalPosition.x - tileTargetPosition.x, 2) + Mathf.Pow(playerScript.FinalPosition.y - tileTargetPosition.y, 2)) * 2);
+    }
+    public static int MovingToTileCost(IntVector2 position1, IntVector2 position2)
+    {
+        return (int)Math.Ceiling(Mathf.Sqrt(Mathf.Pow(position1.x - position2.x, 2) + Mathf.Pow(position1.y - position2.y, 2)) * 2);
+    }
+
     #endregion
 
 }

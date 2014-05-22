@@ -1,6 +1,4 @@
-﻿using System;
-using System.Reflection;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class BehaviorLevel : MonoBehaviour {
 
@@ -160,13 +158,26 @@ public class BehaviorLevel : MonoBehaviour {
 	        {
 	            PlayerActions activePlayerScript = (PlayerActions) _activePlayer.GetComponent(typeof (PlayerActions));
 
-	            if (MovingToTileCost(clickTilePosition, _activePlayer) <= activePlayerScript.ActionPoints && _isTraversable[clickTilePosition.x, clickTilePosition.y] && _items[clickTilePosition.x, clickTilePosition.y] == null && _enemies[clickTilePosition.x, clickTilePosition.y] == null)
+                //if we click on the player
+	            if (Statics.PosToTile(_activePlayer.transform.position.x, _activePlayer.transform.position.y).Equals(clickTilePosition))
 	            {
-                    Vector2 posXY = Statics.TileToPos(clickTilePosition.x, clickTilePosition.y);
-                    var playerGhost = Instantiate(PlayerGhost, new Vector3(posXY.x, posXY.y, 0), Quaternion.identity) as GameObject;
-	                playerGhost.transform.parent = InstanciateTarget;
+	                activePlayerScript.ClearGhosts();
+                    DrawMovement(clickTilePosition, activePlayerScript.ActionPoints);
+	            }
+                
+                //if we click on an active players ghost
+                else if (activePlayerScript.CheckIfGhost(clickTilePosition))
+                {
+                    IntVector2 lastGhostPosition = activePlayerScript.RemoveGhosts(clickTilePosition);
+                    DrawMovement(lastGhostPosition, activePlayerScript.ActionPoints);
+                }
 
-                    activePlayerScript.ActionPoints -= MovingToTileCost(clickTilePosition, _activePlayer);
+                //if we click on an empty tile a player can move to depending on their current action points
+                else if (Statics.MovingToTileCost(clickTilePosition, _activePlayer) <= activePlayerScript.ActionPoints && Statics.MovingToTileCost(clickTilePosition, _activePlayer) > 1 && _isTraversable[clickTilePosition.x, clickTilePosition.y] && _items[clickTilePosition.x, clickTilePosition.y] == null && _enemies[clickTilePosition.x, clickTilePosition.y] == null)
+	            {
+                    activePlayerScript.AddGhost(clickTilePosition);
+
+                    activePlayerScript.ActionPoints -= Statics.MovingToTileCost(clickTilePosition, _activePlayer);
                     activePlayerScript.FinalPosition = clickTilePosition;
 
                     DrawMovement(clickTilePosition, activePlayerScript.ActionPoints);
@@ -302,13 +313,6 @@ public class BehaviorLevel : MonoBehaviour {
 
     }
 
-    public int MovingToTileCost(IntVector2 tileTargetPosition, GameObject player)
-    {
-        PlayerActions playerScript = (PlayerActions) player.GetComponent(typeof (PlayerActions));
 
-        //Debug.Log(Math.Ceiling(Mathf.Sqrt(Mathf.Pow(playerScript.FinalPosition.x - tileTargetPosition.x, 2) + Mathf.Pow(playerScript.FinalPosition.y - tileTargetPosition.y, 2)) * 2));
-
-        return (int) Math.Ceiling(Mathf.Sqrt(Mathf.Pow(playerScript.FinalPosition.x - tileTargetPosition.x, 2) + Mathf.Pow(playerScript.FinalPosition.y - tileTargetPosition.y, 2)) * 2);
-    }
 
 }

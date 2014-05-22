@@ -145,7 +145,7 @@ public class BehaviorLevel : MonoBehaviour {
 	            {
 	                PlayerActions currentPlayerScript = (PlayerActions) _players[i].GetComponent(typeof (PlayerActions));
 
-                    if (currentPlayerScript.StartPosition.Equals(clickTilePosition))
+                    if (currentPlayerScript.StartPosition.Equals(clickTilePosition) && !currentPlayerScript.RoundFinished)
                     {
                         _activePlayer = _players[i];
                         currentPlayerScript.Active = true;
@@ -186,6 +186,32 @@ public class BehaviorLevel : MonoBehaviour {
 
 
 	    }
+
+	    if (Input.GetKeyDown(KeyCode.P) && _activePlayer != null)
+	    {
+            ClearMovement();
+            PlayerActions activePlayerScript = (PlayerActions)_activePlayer.GetComponent(typeof(PlayerActions));
+	        activePlayerScript.RoundFinished = true;
+	        _activePlayer = null;
+
+            //this is set and evaluated by the following for loop
+            bool isRoundDoneFlag = true;
+
+            for (int i = 0; i < _players.Length; i++)
+	        {
+                PlayerActions playerScript = (PlayerActions)_players[i].GetComponent(typeof(PlayerActions));
+	            if (!playerScript.RoundFinished)
+	            {
+	                isRoundDoneFlag = false;
+	            }
+	        }
+
+	        if (isRoundDoneFlag)
+	        {
+	            BroadcastMessage("MessageHandler", "NewRound");
+                EvaluateTileOverlayAndVisibility();
+	        }
+        }
 	}
 
     public void EvaluateTileOverlayAndVisibility()
@@ -311,6 +337,19 @@ public class BehaviorLevel : MonoBehaviour {
             }
         }
 
+    }
+
+    public void ClearMovement()
+    {
+        for (int j = 0; j < Statics.HorizontalTiles; j++)
+        {
+            for (int k = 0; k < Statics.VerticalTiles; k++)
+            {
+                //Reset previous movement draw
+                if (_overlay[j, k].GetComponent<SpriteRenderer>().color == Statics.LightGreen || _overlay[j, k].GetComponent<SpriteRenderer>().color == Statics.Yellow || _overlay[j, k].GetComponent<SpriteRenderer>().color == Statics.Red)
+                    _overlay[j, k].SetActive(false);
+            }
+        }
     }
 
 

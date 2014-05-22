@@ -136,8 +136,15 @@ public class PlayerActions : MonoBehaviour
     //called by the rounds manager (todo)
     public void RoundStart()
     {
-        StartPosition = Statics.PosToTile(this.transform.position.x, this.transform.position.y);
-        FinalPosition = StartPosition;
+        if (_ghosts.Count == 0)
+        {
+            FinalPosition = Statics.PosToTile(this.transform.position.x, this.transform.position.y);
+        }
+        
+        StartPosition = FinalPosition;
+
+        Vector2 worldPosition = Statics.TileToPos(StartPosition.x, StartPosition.y);
+        this.transform.position = worldPosition;
 
         for (int i = 0; i < _ghosts.Count; i++)
         {
@@ -148,5 +155,15 @@ public class PlayerActions : MonoBehaviour
         ActionPoints = Statics.ActionPoints;
 
         RoundFinished = false;
+        Active = false;
+    }
+
+    public void MessageHandler(string msg)
+    {
+        if (msg.Equals("NewRound"))
+        {
+            Debug.Log("Restart received" + _ghosts.Count);
+            RoundStart();
+        }
     }
 }

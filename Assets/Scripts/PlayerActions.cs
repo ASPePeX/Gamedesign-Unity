@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerActions : MonoBehaviour
@@ -13,9 +14,12 @@ public class PlayerActions : MonoBehaviour
     private IntVector2 _startPosition;
     private IntVector2 _finalPosition;
     private List<GameObject> _ghosts;
+    private GameObject _ghostItem;
+
+    private bool _lastAction;
 
     private GameObject _level;
-
+    private GameObject[] _availableItems;
 
     public bool Active
     {
@@ -47,7 +51,14 @@ public class PlayerActions : MonoBehaviour
         set { _actionPoints = value; }
     }
 
-    public void AddGhost(IntVector2 instantiatePosition)
+    public bool LastAction
+    {
+        get { return _lastAction; }
+        set { _lastAction = value; }
+    }
+
+    #region PlayerGhosts
+    public void AddPlayerGhost(IntVector2 instantiatePosition)
     {
         Vector2 posXY = Statics.TileToPos(instantiatePosition.x, instantiatePosition.y);
 
@@ -56,7 +67,7 @@ public class PlayerActions : MonoBehaviour
         _ghosts.Add(newGhost);
     }
 
-    public bool CheckIfGhost(IntVector2 checkPosition)
+    public bool CheckIfPlayerGhost(IntVector2 checkPosition)
     {
         for (int i = 0; i < _ghosts.Count; i++)
         {
@@ -68,7 +79,7 @@ public class PlayerActions : MonoBehaviour
         return false;
     }
 
-    public IntVector2 RemoveGhosts(IntVector2 removePosition)
+    public IntVector2 RemovePlayerGhosts(IntVector2 removePosition)
     {
         bool found = false;
         for (int i = _ghosts.Count - 1; i > -1; i--)
@@ -86,7 +97,7 @@ public class PlayerActions : MonoBehaviour
                 if (i > 0)
                 {
                     FinalPosition = Statics.PosToTile(_ghosts[i - 1].transform.position.x, _ghosts[i - 1].transform.position.y);
-                    ActionPoints = Statics.ActionPoints - Statics.MovingToTileCost(Statics.PosToTile(_ghosts[i - 1].transform.position.x, _ghosts[i - 1].transform.position.y), Statics.PosToTile(this.transform.position.x, this.transform.position.y));
+                    ActionPoints = Statics.ActionPoints - Statics.MovingToTileCost(Statics.PosToTile(_ghosts[i - 1].transform.position.x, _ghosts[i - 1].transform.position.y), Statics.PosToTile(transform.position.x, transform.position.y));
                 }
                 else
                 {
@@ -101,6 +112,60 @@ public class PlayerActions : MonoBehaviour
         return FinalPosition;
     }
 
+    #endregion
+
+    #region ItemGhosts
+    public void AddItemGhost(IntVector2 instantiatePosition, String itemtype="")
+    {
+        GameObject instantiateItem = null;
+
+        for (int i = 0; i < _availableItems.Length; i++)
+        {
+            if (_availableItems[i].name == itemtype)
+            {
+                instantiateItem = _availableItems[i];
+            }
+        }
+
+        if (instantiateItem != null)
+        {
+            Vector2 posXY = Statics.TileToPos(instantiatePosition.x, instantiatePosition.y);
+
+            var newGhost = Instantiate(instantiateItem, new Vector3(posXY.x, posXY.y, 0), Quaternion.identity) as GameObject;
+            newGhost.transform.parent = this.transform;
+            newGhost.name = itemtype;
+            newGhost.GetComponent<SpriteRenderer>().color = Statics.SemiTransparent;
+            _ghostItem = newGhost;
+
+            LastAction = true;
+        }
+        else
+        {
+            Debug.LogError("Item ghost could not be instanciated!");
+        }
+    }
+
+    public bool CheckIfItemGhost(IntVector2 checkPosition)
+    {
+        if (_ghostItem != null && Statics.PosToTile(_ghostItem.transform.position.x, _ghostItem.transform.position.y).Equals(checkPosition))
+        {
+            return true;
+        }
+        return false;
+    }
+
+    public void RemoveItemGhosts(IntVector2 removePosition)
+    {
+        if (Statics.PosToTile(_ghostItem.transform.position.x, _ghostItem.transform.position.y).Equals(removePosition))
+        {
+            Destroy(_ghostItem);
+            _ghostItem = null;
+        }
+
+        LastAction = false;
+    }
+
+    #endregion
     public void ClearGhosts()
     {
         RoundStart();
@@ -110,28 +175,13 @@ public class PlayerActions : MonoBehaviour
 	void Start ()
 	{
 	    _level = GameObject.Find("/Level");
+        _availableItems = _level.GetComponent<AvailableItems>()._items;
         _ghosts = new List<GameObject>();
+        _ghostItem = null;
+	    LastAction = false;
 
         RoundStart();
 	}
-	
-	// Update is called once per frame
-/*	void Update () {
-
-	    if (_active)
-	    {
-	        if (Input.GetMouseButton(0))
-	        {
-	            RoundStart();
-                showMovement();
-	        }
-	    }
-	}*/
-
-    private void showMovement()
-    {
-       SendMessageUpwards("DrawMovement", FinalPosition.x + "x" + FinalPosition.y + "x" + ActionPoints, SendMessageOptions.RequireReceiver);
-    }
 
     //called by the rounds manager (todo)
     public void RoundStart()
@@ -152,8 +202,18 @@ public class PlayerActions : MonoBehaviour
         }
         _ghosts.Clear();
 
+        if (_ghostItem != null)
+        {
+            //ToDo: Send item to inventory
+            Debug.Log("Send item to interface -> " + _ghostItem.name + " to " + name);
+
+            Destroy(_ghostItem);
+            _ghostItem = null;
+        }
+
         ActionPoints = Statics.ActionPoints;
 
+        LastAction = false;
         RoundFinished = false;
         Active = false;
     }

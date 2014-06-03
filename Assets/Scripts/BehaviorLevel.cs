@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using System;
+using System.Text;
+using UnityEngine;
 
 public class BehaviorLevel : MonoBehaviour {
 
@@ -27,6 +29,12 @@ public class BehaviorLevel : MonoBehaviour {
     public Transform PlayerSearchTarget;
     public Transform EnemySearchTarget;
     public Transform ItemSearchTarget;
+
+    private GameObject[] _availableItems;
+
+    private GameObject _dropItem;
+
+    private bool refresh;
 
 // ReSharper disable once UnusedMember.Local
     public void Start ()
@@ -79,6 +87,8 @@ public class BehaviorLevel : MonoBehaviour {
 
         TileOverlay.GetComponent<SpriteRenderer>().color = Statics.Black;
 
+        _availableItems = GetComponent<AvailableItems>()._items;
+
         _overlay = new GameObject[Statics.HorizontalTiles, Statics.VerticalTiles];
         _players = new GameObject[PlayerSearchTarget.childCount];
         _enemies = new GameObject[Statics.HorizontalTiles, Statics.VerticalTiles];
@@ -126,14 +136,17 @@ public class BehaviorLevel : MonoBehaviour {
 
             _items[tileXY.x, tileXY.y] = item;
         }
-
         EvaluateTileOverlayAndVisibility();
-
     }
-	
+
 // ReSharper disable once UnusedMember.Local
 	void Update () {
-	    if (Input.GetMouseButtonDown(0))
+	    if (Input.GetKeyDown(KeyCode.I))
+	    {
+	        StartDropItem(_availableItems[0].name);
+	    }
+
+	    if (Input.GetMouseButtonDown(0) || refresh)
 	    {
 	        Vector2 mouseWorldPos = MainCamera.ScreenToWorldPoint(new Vector2(Input.mousePosition.x, Input.mousePosition.y));
             IntVector2 clickTilePosition = Statics.PosToTile(mouseWorldPos.x + Statics.TileSize / 100f / 2f, mouseWorldPos.y + Statics.TileSize / 100f / 2f);
@@ -149,7 +162,7 @@ public class BehaviorLevel : MonoBehaviour {
                     {
                         _activePlayer = _players[i];
                         currentPlayerScript.Active = true;
-                        DrawMovement(currentPlayerScript.StartPosition, currentPlayerScript.ActionPoints);
+                        DrawMovement(currentPlayerScript.StartPosition, currentPlayerScript.ActionPoints, currentPlayerScript.LastAction);
                     }
 	            }
 	        }
@@ -158,33 +171,84 @@ public class BehaviorLevel : MonoBehaviour {
 	        {
 	            PlayerActions activePlayerScript = (PlayerActions) _activePlayer.GetComponent(typeof (PlayerActions));
 
-                //if we click on the player
-	            if (Statics.PosToTile(_activePlayer.transform.position.x, _activePlayer.transform.position.y).Equals(clickTilePosition))
+                //if the gui sent us an item to drop
+                if (_dropItem != null && refresh && activePlayerScript.ActionPoints > 1)
 	            {
-	                activePlayerScript.ClearGhosts();
-                    DrawMovement(clickTilePosition, activePlayerScript.ActionPoints);
+	                DrawDropArea(activePlayerScript.FinalPosition, activePlayerScript.ActionPoints);
 	            }
-                
+
+                //if we click on the player
+	            else if (Statics.PosToTile(_activePlayer.transform.position.x, _activePlayer.transform.position.y).Equals(clickTilePosition))
+	            {
+                    _dropItem = null;
+                    activePlayerScript.ClearGhosts();
+                    
+	                DrawMovement(clickTilePosition, activePlayerScript.ActionPoints, activePlayerScript.LastAction);
+	            }
+
                 //if we click on an active players ghost
-                else if (activePlayerScript.CheckIfGhost(clickTilePosition))
+                else if (activePlayerScript.CheckIfPlayerGhost(clickTilePosition))
                 {
-                    IntVector2 lastGhostPosition = activePlayerScript.RemoveGhosts(clickTilePosition);
-                    DrawMovement(lastGhostPosition, activePlayerScript.ActionPoints);
+                    _dropItem = null;
+                    IntVector2 lastGhostPosition = activePlayerScript.RemovePlayerGhosts(clickTilePosition);
+                    DrawMovement(lastGhostPosition, activePlayerScript.ActionPoints, activePlayerScript.LastAction);
+                }
+
+                //if we have an item from the gui and click somewhere
+                else if (_dropItem != null && !refresh && activePlayerScript.ActionPoints > 1 && Statics.MovingToTileCost(clickTilePosition, _activePlayer) <= 3 && _items[clickTilePosition.x, clickTilePosition.y] == null && _isTraversable[clickTilePosition.x, clickTilePosition.y])
+                {
+                    _items[clickTilePosition.x, clickTilePosition.y] = Instantiate(_dropItem) as GameObject;
+                    _items[clickTilePosition.x, clickTilePosition.y].transform.parent = ItemSearchTarget;
+                    _items[clickTilePosition.x, clickTilePosition.y].name = _dropItem.name;
+                    _items[clickTilePosition.x, clickTilePosition.y].transform.position = Statics.TileToPos(clickTilePosition.x, clickTilePosition.y);
+                    activePlayerScript.ActionPoints -= 1;
+                    //ToDo: Tell inventory that item has been dropped
+                    Debug.Log(_activePlayer.name + " dropped " + _dropItem.name);
+
+                    _dropItem = null;
+                    DrawMovement(activePlayerScript.FinalPosition, activePlayerScript.ActionPoints, activePlayerScript.LastAction);
                 }
 
                 //if we click on an empty tile a player can move to depending on their current action points
-                else if (Statics.MovingToTileCost(clickTilePosition, _activePlayer) <= activePlayerScript.ActionPoints && Statics.MovingToTileCost(clickTilePosition, _activePlayer) > 1 && _isTraversable[clickTilePosition.x, clickTilePosition.y] && _items[clickTilePosition.x, clickTilePosition.y] == null && _enemies[clickTilePosition.x, clickTilePosition.y] == null)
+                else if (!activePlayerScript.LastAction && Statics.MovingToTileCost(clickTilePosition, _activePlayer) <= activePlayerScript.ActionPoints && Statics.MovingToTileCost(clickTilePosition, _activePlayer) > 1 && _isTraversable[clickTilePosition.x, clickTilePosition.y] && _items[clickTilePosition.x, clickTilePosition.y] == null && _enemies[clickTilePosition.x, clickTilePosition.y] == null && _dropItem == null)
 	            {
-                    activePlayerScript.AddGhost(clickTilePosition);
+                    activePlayerScript.AddPlayerGhost(clickTilePosition);
 
                     activePlayerScript.ActionPoints -= Statics.MovingToTileCost(clickTilePosition, _activePlayer);
                     activePlayerScript.FinalPosition = clickTilePosition;
 
-                    DrawMovement(clickTilePosition, activePlayerScript.ActionPoints);
+                    DrawMovement(clickTilePosition, activePlayerScript.ActionPoints, activePlayerScript.LastAction);
+                }
+                //if we click on an active players ghosted item
+                else if (activePlayerScript.CheckIfItemGhost(clickTilePosition) && _dropItem == null)
+                {
+                    activePlayerScript.RemoveItemGhosts(clickTilePosition);
+                    activePlayerScript.ActionPoints += 1;
+
+                    _items[clickTilePosition.x, clickTilePosition.y].SetActive(true);
+
+                    DrawMovement(activePlayerScript.FinalPosition, activePlayerScript.ActionPoints, activePlayerScript.LastAction);
+                }
+                //if we click on an item in range
+                    //ToDo: Check if there is space in the players inventory
+                else if (Statics.MovingToTileCost(clickTilePosition, _activePlayer) <= 3 && activePlayerScript.ActionPoints > 1 && _items[clickTilePosition.x, clickTilePosition.y] != null && _items[clickTilePosition.x, clickTilePosition.y].activeSelf && _dropItem == null)
+                {
+                    activePlayerScript.AddItemGhost(clickTilePosition, _items[clickTilePosition.x, clickTilePosition.y].name);
+
+                    activePlayerScript.ActionPoints -= 1;
+
+                    _items[clickTilePosition.x, clickTilePosition.y].SetActive(false);
+
+                    DrawMovement(clickTilePosition, activePlayerScript.ActionPoints, activePlayerScript.LastAction);
+                }
+
+                else
+                {
+                    _dropItem = null;
+                    DrawMovement(activePlayerScript.FinalPosition, activePlayerScript.ActionPoints, activePlayerScript.LastAction);
                 }
 	        }
-
-
+            refresh = false;
 	    }
 
 	    if (Input.GetKeyDown(KeyCode.P) && _activePlayer != null)
@@ -208,7 +272,21 @@ public class BehaviorLevel : MonoBehaviour {
 
 	        if (isRoundDoneFlag)
 	        {
-	            BroadcastMessage("MessageHandler", "NewRound");
+                //next round
+                BroadcastMessage("MessageHandler", "NewRound");
+
+                //clearing out inactive items
+                for (int i = 0; i < Statics.HorizontalTiles; i++)
+                {
+                    for (int j = 0; j < Statics.VerticalTiles; j++)
+                    {
+                        if (_items[i, j] != null && !_items[i, j].activeSelf)
+                        {
+                            Destroy(_items[i, j]);
+                            _items[i, j] = null;
+                        }
+                    }
+                }
                 EvaluateTileOverlayAndVisibility();
 	        }
         }
@@ -298,16 +376,17 @@ public class BehaviorLevel : MonoBehaviour {
         }
     }
 
-    public void DrawMovement(IntVector2 centerPosition, int actionPoints)
+    public void DrawMovement(IntVector2 centerPosition, int actionPoints, bool movementOverride)
     {
 
-
+        if (movementOverride)
+            actionPoints = 0;
 
         for (int j = 0; j < Statics.HorizontalTiles; j++)
         {
             for (int k = 0; k < Statics.VerticalTiles; k++)
             {
-                //Reset previous movement draw
+                //Reset previous draw
                 if (_overlay[j, k].GetComponent<SpriteRenderer>().color == Statics.LightGreen || _overlay[j, k].GetComponent<SpriteRenderer>().color == Statics.Yellow || _overlay[j, k].GetComponent<SpriteRenderer>().color == Statics.Red)
                     _overlay[j, k].SetActive(false);
 
@@ -316,7 +395,7 @@ public class BehaviorLevel : MonoBehaviour {
                 {
                     if (_isTraversable[j, k])
                     {
-                        if (_items[j, k] == null && _enemies[j, k] == null)
+                        if (actionPoints > 1 && _items[j, k] == null && _enemies[j, k] == null)
                         {
                             _overlay[j, k].GetComponent<SpriteRenderer>().color = Statics.LightGreen;
                             _overlay[j, k].SetActive(true);
@@ -332,11 +411,32 @@ public class BehaviorLevel : MonoBehaviour {
                             _overlay[j, k].SetActive(true);
                         }
                     }
-
                 }
             }
         }
+    }
 
+    public void DrawDropArea(IntVector2 centerPosition, int actionPoints)
+    {
+        for (int j = 0; j < Statics.HorizontalTiles; j++)
+        {
+            for (int k = 0; k < Statics.VerticalTiles; k++)
+            {
+                //Reset previous draw
+                if (_overlay[j, k].GetComponent<SpriteRenderer>().color == Statics.LightGreen || _overlay[j, k].GetComponent<SpriteRenderer>().color == Statics.Yellow || _overlay[j, k].GetComponent<SpriteRenderer>().color == Statics.Red)
+                    _overlay[j, k].SetActive(false);
+
+                //Debug.Log(Mathf.Sqrt(Mathf.Pow(j - centerPosition.x, 2) + Mathf.Pow(k - centerPosition.y, 2)) * 2);
+                if (Mathf.Sqrt(Mathf.Pow(j - centerPosition.x, 2) + Mathf.Pow(k - centerPosition.y, 2))*2 < 3)
+                {
+                    if (_isTraversable[j, k])
+                    {
+                        _overlay[j, k].GetComponent<SpriteRenderer>().color = Statics.Yellow;
+                        _overlay[j, k].SetActive(true);
+                    }
+                }
+            }
+        }
     }
 
     public void ClearMovement()
@@ -352,6 +452,15 @@ public class BehaviorLevel : MonoBehaviour {
         }
     }
 
-
-
+    public void StartDropItem(String itemName)
+    {
+        for (int i = 0; i < _availableItems.Length; i++)
+        {
+            if (_availableItems[i].name == itemName)
+            {
+                _dropItem = _availableItems[i];
+            }
+        }
+        refresh = true;
+    }
 }

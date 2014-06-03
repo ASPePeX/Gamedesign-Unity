@@ -42,6 +42,7 @@ public static class Statics
     private static readonly Color _darkGreen = new Color(0, 1, 0, 0.5f);
     private static readonly Color _blue = new Color(0, 0, 1, 0.3f);
     private static readonly Color _yellow = new Color(1, 1, 0, 0.3f);
+    private static readonly Color _semiTransparent = new Color(1, 1, 1, 0.3f);
 
     public static Color Black
     {
@@ -76,6 +77,11 @@ public static class Statics
     public static Color Yellow
     {
         get { return _yellow; }
+    }
+
+    public static Color SemiTransparent
+    {
+        get { return _semiTransparent; }
     }
 
     #endregion

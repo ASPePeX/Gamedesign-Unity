@@ -5,6 +5,7 @@ using UnityEngine;
 public class PlayerActions : MonoBehaviour
 {
     public GameObject PlayerGhost;
+    public Color playerColor;
 
     private bool _active;
     private bool _roundFinished;
@@ -64,6 +65,7 @@ public class PlayerActions : MonoBehaviour
 
         var newGhost = Instantiate(PlayerGhost, new Vector3(posXY.x, posXY.y, 0), Quaternion.identity) as GameObject;
         newGhost.transform.parent = this.transform;
+        newGhost.GetComponent<SpriteRenderer>().color = playerColor;
         _ghosts.Add(newGhost);
     }
 
@@ -179,6 +181,8 @@ public class PlayerActions : MonoBehaviour
         _ghosts = new List<GameObject>();
         _ghostItem = null;
 	    LastAction = false;
+
+	    GetComponent<SpriteRenderer>().color = playerColor;
 
         RoundStart();
 	}

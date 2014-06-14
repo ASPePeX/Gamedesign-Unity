@@ -742,7 +742,7 @@ Transform:
   m_LocalPosition: {x: 5.41604185, y: .674214602, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
-  m_Father: {fileID: 1551635425}
+  m_Father: {fileID: 1987696129}
 --- !u!1001 &396851264
 Prefab:
   m_ObjectHideFlags: 0
@@ -785,6 +785,38 @@ Prefab:
     - target: {fileID: 100000, guid: b0a2a72eab366b943a15534ad7024b89, type: 2}
       propertyPath: m_Name
       value: Player1
+      objectReference: {fileID: 0}
+    - target: {fileID: 21200000, guid: b0a2a72eab366b943a15534ad7024b89, type: 2}
+      propertyPath: m_Color.r
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 21200000, guid: b0a2a72eab366b943a15534ad7024b89, type: 2}
+      propertyPath: m_Color.g
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 21200000, guid: b0a2a72eab366b943a15534ad7024b89, type: 2}
+      propertyPath: m_Color.b
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 21200000, guid: b0a2a72eab366b943a15534ad7024b89, type: 2}
+      propertyPath: m_Color.a
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 11400000, guid: b0a2a72eab366b943a15534ad7024b89, type: 2}
+      propertyPath: playerColor.r
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 11400000, guid: b0a2a72eab366b943a15534ad7024b89, type: 2}
+      propertyPath: playerColor.g
+      value: .66896534
+      objectReference: {fileID: 0}
+    - target: {fileID: 11400000, guid: b0a2a72eab366b943a15534ad7024b89, type: 2}
+      propertyPath: playerColor.b
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 11400000, guid: b0a2a72eab366b943a15534ad7024b89, type: 2}
+      propertyPath: playerColor.a
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: b0a2a72eab366b943a15534ad7024b89, type: 2}
@@ -2390,7 +2422,7 @@ Prefab:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
-    m_TransformParent: {fileID: 1551635425}
+    m_TransformParent: {fileID: 1987696129}
     m_Modifications:
     - target: {fileID: 400000, guid: e11cfc272375d9d43a9243ce80896e73, type: 2}
       propertyPath: m_LocalPosition.x
@@ -2869,7 +2901,6 @@ Transform:
   - {fileID: 1835245989}
   - {fileID: 904141880}
   - {fileID: 872835850}
-  - {fileID: 392468391}
   - {fileID: 230072397}
   - {fileID: 780831379}
   m_Father: {fileID: 1688733112}
@@ -2915,6 +2946,34 @@ Prefab:
     - target: {fileID: 100000, guid: b0a2a72eab366b943a15534ad7024b89, type: 2}
       propertyPath: m_Name
       value: Player3
+      objectReference: {fileID: 0}
+    - target: {fileID: 21200000, guid: b0a2a72eab366b943a15534ad7024b89, type: 2}
+      propertyPath: m_Color.r
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 21200000, guid: b0a2a72eab366b943a15534ad7024b89, type: 2}
+      propertyPath: m_Color.g
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 21200000, guid: b0a2a72eab366b943a15534ad7024b89, type: 2}
+      propertyPath: m_Color.b
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 11400000, guid: b0a2a72eab366b943a15534ad7024b89, type: 2}
+      propertyPath: playerColor.r
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 11400000, guid: b0a2a72eab366b943a15534ad7024b89, type: 2}
+      propertyPath: playerColor.g
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 11400000, guid: b0a2a72eab366b943a15534ad7024b89, type: 2}
+      propertyPath: playerColor.b
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 11400000, guid: b0a2a72eab366b943a15534ad7024b89, type: 2}
+      propertyPath: playerColor.a
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: b0a2a72eab366b943a15534ad7024b89, type: 2}
@@ -3251,6 +3310,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   PlayerGhost: {fileID: 100000, guid: 8e4d655deb82100418729885e91f4de3, type: 2}
+  playerColor: {r: 1, g: .848275781, b: 0, a: 1}
 --- !u!212 &1767063707
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -3444,6 +3504,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   PlayerGhost: {fileID: 100000, guid: 8e4d655deb82100418729885e91f4de3, type: 2}
+  playerColor: {r: 1, g: 0, b: 0, a: 1}
 --- !u!212 &1857070707
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -3645,6 +3706,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   PlayerGhost: {fileID: 100000, guid: 8e4d655deb82100418729885e91f4de3, type: 2}
+  playerColor: {r: 0, g: .66896534, b: 1, a: 1}
 --- !u!1 &1987696128
 GameObject:
   m_ObjectHideFlags: 0
@@ -3671,6 +3733,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 128735194}
+  - {fileID: 392468391}
   - {fileID: 8859684}
   m_Father: {fileID: 1688733112}
 --- !u!1 &1989583795
@@ -3779,6 +3842,22 @@ Prefab:
     - target: {fileID: 100000, guid: b0a2a72eab366b943a15534ad7024b89, type: 2}
       propertyPath: m_Name
       value: Player2
+      objectReference: {fileID: 0}
+    - target: {fileID: 11400000, guid: b0a2a72eab366b943a15534ad7024b89, type: 2}
+      propertyPath: playerColor.a
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 11400000, guid: b0a2a72eab366b943a15534ad7024b89, type: 2}
+      propertyPath: playerColor.r
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 11400000, guid: b0a2a72eab366b943a15534ad7024b89, type: 2}
+      propertyPath: playerColor.g
+      value: .848275781
+      objectReference: {fileID: 0}
+    - target: {fileID: 11400000, guid: b0a2a72eab366b943a15534ad7024b89, type: 2}
+      propertyPath: playerColor.b
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: b0a2a72eab366b943a15534ad7024b89, type: 2}

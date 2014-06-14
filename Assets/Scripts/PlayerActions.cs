@@ -186,12 +186,15 @@ public class PlayerActions : MonoBehaviour
     //called by the rounds manager (todo)
     public void RoundStart()
     {
-        if (_ghosts.Count == 0)
+        if (RoundFinished)
+        {
+            StartPosition = FinalPosition;
+        }
+        else
         {
             FinalPosition = Statics.PosToTile(this.transform.position.x, this.transform.position.y);
+            StartPosition = FinalPosition;
         }
-        
-        StartPosition = FinalPosition;
 
         Vector2 worldPosition = Statics.TileToPos(StartPosition.x, StartPosition.y);
         this.transform.position = worldPosition;

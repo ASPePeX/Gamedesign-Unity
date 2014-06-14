@@ -169,6 +169,7 @@ public class BehaviorLevel : MonoBehaviour {
             //If we have an active player ...
 	        else
 	        {
+                Debug.Log(CheckIfPlayerOnTile(clickTilePosition));
 	            PlayerActions activePlayerScript = (PlayerActions) _activePlayer.GetComponent(typeof (PlayerActions));
 
                 //if the gui sent us an item to drop
@@ -210,7 +211,7 @@ public class BehaviorLevel : MonoBehaviour {
                 }
 
                 //if we click on an empty tile a player can move to depending on their current action points
-                else if (!activePlayerScript.LastAction && Statics.MovingToTileCost(clickTilePosition, _activePlayer) <= activePlayerScript.ActionPoints && Statics.MovingToTileCost(clickTilePosition, _activePlayer) > 1 && _isTraversable[clickTilePosition.x, clickTilePosition.y] && _items[clickTilePosition.x, clickTilePosition.y] == null && _enemies[clickTilePosition.x, clickTilePosition.y] == null && _dropItem == null)
+                else if (!activePlayerScript.LastAction && Statics.MovingToTileCost(clickTilePosition, _activePlayer) <= activePlayerScript.ActionPoints && Statics.MovingToTileCost(clickTilePosition, _activePlayer) > 1 && _isTraversable[clickTilePosition.x, clickTilePosition.y] && _items[clickTilePosition.x, clickTilePosition.y] == null && _enemies[clickTilePosition.x, clickTilePosition.y] == null && _dropItem == null && !CheckIfPlayerOnTile(clickTilePosition))
 	            {
                     activePlayerScript.AddPlayerGhost(clickTilePosition);
 
@@ -462,5 +463,20 @@ public class BehaviorLevel : MonoBehaviour {
             }
         }
         refresh = true;
+    }
+
+    // Returns true if a player, a player ghost or an item ghost is on a tile
+    private bool CheckIfPlayerOnTile(IntVector2 tilePosition)
+    {
+        foreach (GameObject player in _players)
+        {
+            PlayerActions playerScript = player.GetComponent<PlayerActions>();
+
+            if (Statics.PosToTile(player.transform.position.x, player.transform.position.y).Equals(tilePosition) || playerScript.CheckIfPlayerGhost(tilePosition) || playerScript.CheckIfItemGhost(tilePosition))
+            {
+                return true;
+            }
+        }
+        return false;
     }
 }

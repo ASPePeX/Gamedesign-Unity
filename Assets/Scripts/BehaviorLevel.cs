@@ -361,10 +361,11 @@ public class BehaviorLevel : MonoBehaviour {
                 if (_overlay[j, k].GetComponent<SpriteRenderer>().color == Statics.DarkGreen || _overlay[j, k].GetComponent<SpriteRenderer>().color == Statics.LightGreen || _overlay[j, k].GetComponent<SpriteRenderer>().color == Statics.Yellow || _overlay[j, k].GetComponent<SpriteRenderer>().color == Statics.Red)
                     _overlay[j, k].SetActive(false);
 
-                int movementCost = Statics.MovingToTileCost(centerPosition, new IntVector2(j, k));
+                IntVector2 checkPosition = new IntVector2(j, k);
+                int movementCost = Statics.MovingToTileCost(centerPosition, checkPosition);
 
                 //Debug.Log(Mathf.Sqrt(Mathf.Pow(j - centerPosition.x, 2) + Mathf.Pow(k - centerPosition.y, 2)) * 2);
-                if (movementCost <= actionPoints)
+                if (movementCost <= actionPoints && !CheckIfPlayerOnTile(checkPosition))
                 {
                     if (_isTraversable[j, k])
                     {
@@ -424,7 +425,7 @@ public class BehaviorLevel : MonoBehaviour {
             for (int k = 0; k < Statics.VerticalTiles; k++)
             {
                 //Reset previous movement draw
-                if (_overlay[j, k].GetComponent<SpriteRenderer>().color == Statics.LightGreen || _overlay[j, k].GetComponent<SpriteRenderer>().color == Statics.Yellow || _overlay[j, k].GetComponent<SpriteRenderer>().color == Statics.Red)
+                if (_overlay[j, k].GetComponent<SpriteRenderer>().color == Statics.DarkGreen || _overlay[j, k].GetComponent<SpriteRenderer>().color == Statics.LightGreen || _overlay[j, k].GetComponent<SpriteRenderer>().color == Statics.Yellow || _overlay[j, k].GetComponent<SpriteRenderer>().color == Statics.Red)
                     _overlay[j, k].SetActive(false);
             }
         }

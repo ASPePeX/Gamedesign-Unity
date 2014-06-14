@@ -29,6 +29,7 @@ public class BehaviorLevel : MonoBehaviour {
     public Transform PlayerSearchTarget;
     public Transform EnemySearchTarget;
     public Transform ItemSearchTarget;
+    public Transform TraversableEvaluationTarget;
 
     private GameObject[] _availableItems;
 
@@ -39,51 +40,20 @@ public class BehaviorLevel : MonoBehaviour {
 // ReSharper disable once UnusedMember.Local
     public void Start ()
     {
-        #region _istraversable
-        _isTraversable = new bool[,]
+        _isTraversable = new bool[Statics.HorizontalTiles,Statics.VerticalTiles];
+        for (int i = 0; i < Statics.HorizontalTiles; i++)
         {
-            {true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true},
-            {true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true},
-            {true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true},
-            {true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true},
-            {true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true},
-            {true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true},
-            {true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true},
-            {true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true},
-            {true, true, true, true, true, true, true, true, false, false, false, false, false, false, true, true, true, true, true, true},
-            {true, true, true, true, true, true, true, true, false, false, false, false, false, false, true, true, true, true, true, true},
-            {true, true, true, true, true, true, true, true, false, false, false, false, false, false, true, true, true, true, true, true},
-            {true, true, true, true, true, true, true, true, false, false, false, false, false, false, true, true, true, true, true, true},
-            {true, true, true, true, true, true, true, true, false, false, true, true, false, false, true, true, true, true, true, true},
-            {true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true},
-            {true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true},
-            {true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true},
-            {true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true},
-            {true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true},
-            {true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true},
-            {true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true},
-            {true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true},
-            {true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true},
-            {true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true},
-            {true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true},
-            {true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true},
-            {true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true},
-            {true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true},
-            {true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true},
-            {true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true},
-            {true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true},
-            {true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true},
-            {true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true},
-            {true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true},
-            {true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true},
-            {true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true},
-            {true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true},
-            {true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true},
-            {true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true},
-            {true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true},
-            {true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true}
-        };
-        #endregion
+            for (int j = 0; j < Statics.VerticalTiles; j++)
+            {
+                _isTraversable[i, j] = true;
+            }
+        }
+
+        for (int i = 0; i < TraversableEvaluationTarget.childCount; i++)
+        {
+            IntVector2 childPos = Statics.PosToTile(TraversableEvaluationTarget.GetChild(i).transform.position);
+            _isTraversable[childPos.x, childPos.y] = false;
+        }
 
         TileOverlay.GetComponent<SpriteRenderer>().color = Statics.Black;
 

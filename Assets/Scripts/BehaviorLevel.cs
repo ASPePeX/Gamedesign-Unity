@@ -181,7 +181,7 @@ public class BehaviorLevel : MonoBehaviour {
                 }
 
                 //if we click on an empty tile a player can move to depending on their current action points
-                else if (!activePlayerScript.LastAction && Statics.MovingToTileCost(clickTilePosition, _activePlayer) <= activePlayerScript.ActionPoints && Statics.MovingToTileCost(clickTilePosition, _activePlayer) > 1 && _isTraversable[clickTilePosition.x, clickTilePosition.y] && _items[clickTilePosition.x, clickTilePosition.y] == null && _enemies[clickTilePosition.x, clickTilePosition.y] == null && _dropItem == null && !CheckIfPlayerOnTile(clickTilePosition))
+                else if (!activePlayerScript.LastAction && Statics.MovingToTileCost(clickTilePosition, _activePlayer) <= activePlayerScript.ActionPoints && Statics.MovingToTileCost(clickTilePosition, _activePlayer) > 1 && Statics.MovingToTileCost(clickTilePosition, _activePlayer) <= 3  && _isTraversable[clickTilePosition.x, clickTilePosition.y] && _items[clickTilePosition.x, clickTilePosition.y] == null && _enemies[clickTilePosition.x, clickTilePosition.y] == null && _dropItem == null && !CheckIfPlayerOnTile(clickTilePosition))
 	            {
                     activePlayerScript.AddPlayerGhost(clickTilePosition);
 
@@ -358,15 +358,22 @@ public class BehaviorLevel : MonoBehaviour {
             for (int k = 0; k < Statics.VerticalTiles; k++)
             {
                 //Reset previous draw
-                if (_overlay[j, k].GetComponent<SpriteRenderer>().color == Statics.LightGreen || _overlay[j, k].GetComponent<SpriteRenderer>().color == Statics.Yellow || _overlay[j, k].GetComponent<SpriteRenderer>().color == Statics.Red)
+                if (_overlay[j, k].GetComponent<SpriteRenderer>().color == Statics.DarkGreen || _overlay[j, k].GetComponent<SpriteRenderer>().color == Statics.LightGreen || _overlay[j, k].GetComponent<SpriteRenderer>().color == Statics.Yellow || _overlay[j, k].GetComponent<SpriteRenderer>().color == Statics.Red)
                     _overlay[j, k].SetActive(false);
 
+                int movementCost = Statics.MovingToTileCost(centerPosition, new IntVector2(j, k));
+
                 //Debug.Log(Mathf.Sqrt(Mathf.Pow(j - centerPosition.x, 2) + Mathf.Pow(k - centerPosition.y, 2)) * 2);
-                if (Mathf.Sqrt(Mathf.Pow(j - centerPosition.x, 2) + Mathf.Pow(k - centerPosition.y, 2))*2 < actionPoints)
+                if (movementCost <= actionPoints)
                 {
                     if (_isTraversable[j, k])
                     {
-                        if (actionPoints > 1 && _items[j, k] == null && _enemies[j, k] == null)
+                        if ((movementCost == 2 || movementCost == 3) && _items[j, k] == null && _enemies[j, k] == null)
+                        {
+                            _overlay[j, k].GetComponent<SpriteRenderer>().color = Statics.DarkGreen;
+                            _overlay[j, k].SetActive(true);
+                        }
+                        else if (movementCost > 1 && _items[j, k] == null && _enemies[j, k] == null)
                         {
                             _overlay[j, k].GetComponent<SpriteRenderer>().color = Statics.LightGreen;
                             _overlay[j, k].SetActive(true);

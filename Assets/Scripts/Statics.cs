@@ -38,8 +38,8 @@ public static class Statics
     private static readonly Color _black = new Color(0, 0, 0, 1);
     private static readonly Color _gray = new Color(0, 0, 0, 0.6f);
     private static readonly Color _red = new Color(1, 0, 0, 0.3f);
-    private static readonly Color _lightGreen = new Color(0, 1, 0, 0.2f);
-    private static readonly Color _darkGreen = new Color(0, 1, 0, 0.5f);
+    private static readonly Color _lightGreen = new Color(0, 1, 0, 0.1f);
+    private static readonly Color _darkGreen = new Color(0, 1, 0, 0.3f);
     private static readonly Color _blue = new Color(0, 0, 1, 0.3f);
     private static readonly Color _yellow = new Color(1, 1, 0, 0.3f);
     private static readonly Color _semiTransparent = new Color(1, 1, 1, 0.3f);

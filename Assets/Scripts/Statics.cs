@@ -91,10 +91,18 @@ public static class Statics
     {
         return new IntVector2(Mathf.Clamp(Mathf.FloorToInt((posX + (TileSize / 100f / 2f * (HorizontalTiles - 1))) / (TileSize / 100f)), 0, HorizontalTiles - 1), Mathf.Clamp(Mathf.FloorToInt((posY + (TileSize / 100f / 2f * (VerticalTiles - 1))) / (TileSize / 100f)), 0, VerticalTiles - 1));
     }
+    public static IntVector2 PosToTile(Vector2 pos)
+    {
+        return new IntVector2(Mathf.Clamp(Mathf.FloorToInt((pos.x + (TileSize / 100f / 2f * (HorizontalTiles - 1))) / (TileSize / 100f)), 0, HorizontalTiles - 1), Mathf.Clamp(Mathf.FloorToInt((pos.y + (TileSize / 100f / 2f * (VerticalTiles - 1))) / (TileSize / 100f)), 0, VerticalTiles - 1));
+    }
 
     public static Vector2 TileToPos(int tileX, int tileY)
     {
         return new Vector2(tileX * (TileSize / 100f) - (TileSize / 100f / 2f * (HorizontalTiles - 1)), tileY * (TileSize / 100f) - (TileSize / 100f / 2f * (VerticalTiles - 1)));
+    }
+    public static Vector2 TileToPos(IntVector2 tile)
+    {
+        return new Vector2(tile.x * (TileSize / 100f) - (TileSize / 100f / 2f * (HorizontalTiles - 1)), tile.y * (TileSize / 100f) - (TileSize / 100f / 2f * (VerticalTiles - 1)));
     }
 
     public static int MovingToTileCost(IntVector2 tileTargetPosition, GameObject player)

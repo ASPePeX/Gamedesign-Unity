@@ -10,6 +10,8 @@ public class PlayerActions : MonoBehaviour
     private bool _active;
     private bool _roundFinished;
 
+    private bool _lastAction;
+
     private int _actionPoints;
 
     private IntVector2 _startPosition;
@@ -17,8 +19,11 @@ public class PlayerActions : MonoBehaviour
     private List<GameObject> _ghosts;
     private GameObject _ghostItem;
 
-    private bool _lastAction;
+    private List<GameObject> _items;
 
+    private int _activeItem;
+    private int _primaryWeapon;
+    
     private GameObject _level;
     private GameObject[] _availableItems;
 
@@ -56,6 +61,24 @@ public class PlayerActions : MonoBehaviour
     {
         get { return _lastAction; }
         set { _lastAction = value; }
+    }
+
+    public List<GameObject> Items
+    {
+        get { return _items; }
+        set { _items = value; }
+    }
+
+    public int ActiveItem
+    {
+        get { return _activeItem; }
+        set { _activeItem = value; }
+    }
+
+    public int PrimaryWeapon
+    {
+        get { return _primaryWeapon; }
+        set { _primaryWeapon = value; }
     }
 
     #region PlayerGhosts
@@ -179,6 +202,7 @@ public class PlayerActions : MonoBehaviour
 	    _level = GameObject.Find("/Level");
         _availableItems = _level.GetComponent<AvailableItems>()._items;
         _ghosts = new List<GameObject>();
+        _items = new List<GameObject>();
         _ghostItem = null;
 	    LastAction = false;
 
@@ -211,8 +235,8 @@ public class PlayerActions : MonoBehaviour
 
         if (_ghostItem != null)
         {
-            //ToDo: Send item to inventory
-            Debug.Log("Send item to interface -> " + _ghostItem.name + " to " + name);
+            _items.Add(_ghostItem);
+            //ToDo: Tell Inventory something changed
 
             Destroy(_ghostItem);
             _ghostItem = null;
@@ -223,6 +247,8 @@ public class PlayerActions : MonoBehaviour
         LastAction = false;
         RoundFinished = false;
         Active = false;
+
+        Debug.Log(name + " has " + _items.Count + "items");
     }
 
     public void MessageHandler(string msg)

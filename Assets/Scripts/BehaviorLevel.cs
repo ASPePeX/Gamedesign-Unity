@@ -204,13 +204,20 @@ public class BehaviorLevel : MonoBehaviour {
                     //ToDo: Check if there is space in the players inventory
                 else if (Statics.MovingToTileCost(clickTilePosition, _activePlayer) <= 3 && activePlayerScript.ActionPoints > 1 && _items[clickTilePosition.x, clickTilePosition.y] != null && _items[clickTilePosition.x, clickTilePosition.y].activeSelf && _dropItem == null)
                 {
-                    activePlayerScript.AddItemGhost(clickTilePosition, _items[clickTilePosition.x, clickTilePosition.y].name);
+                    if (activePlayerScript.Items.Count < 4)
+                    {
+                        activePlayerScript.AddItemGhost(clickTilePosition, _items[clickTilePosition.x, clickTilePosition.y].name);
 
-                    activePlayerScript.ActionPoints -= 1;
+                        activePlayerScript.ActionPoints -= 1;
 
-                    _items[clickTilePosition.x, clickTilePosition.y].SetActive(false);
+                        _items[clickTilePosition.x, clickTilePosition.y].SetActive(false);
 
-                    DrawMovement(clickTilePosition, activePlayerScript.ActionPoints, activePlayerScript.LastAction);
+                        DrawMovement(clickTilePosition, activePlayerScript.ActionPoints, activePlayerScript.LastAction);
+                    }
+                    else
+                    {
+                        Debug.Log("Too many Items!");
+                    }
                 }
 
                 else

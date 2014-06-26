@@ -235,6 +235,9 @@ public class BehaviorLevel : MonoBehaviour {
             PlayerActions activePlayerScript = (PlayerActions)_activePlayer.GetComponent(typeof(PlayerActions));
 	        activePlayerScript.RoundFinished = true;
 	        _activePlayer = null;
+			//added by konstantin
+			activePlayerScript.Active = false;
+			//
 
             //this is set and evaluated by the following for loop
             bool isRoundDoneFlag = true;

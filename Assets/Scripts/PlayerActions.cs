@@ -13,6 +13,9 @@ public class PlayerActions : MonoBehaviour
     private bool _lastAction;
 
     private int _actionPoints;
+	//added by konstantin
+	private int _healthPoints;
+	//
 
     private IntVector2 _startPosition;
     private IntVector2 _finalPosition;
@@ -56,7 +59,13 @@ public class PlayerActions : MonoBehaviour
         get { return _actionPoints; }
         set { _actionPoints = value; }
     }
-
+	//added by konstantin
+	public int HealthPoints
+	{
+		get { return _healthPoints; }
+		set { _healthPoints = value; }
+	}
+	//
     public bool LastAction
     {
         get { return _lastAction; }
@@ -243,7 +252,9 @@ public class PlayerActions : MonoBehaviour
         }
 
         ActionPoints = Statics.ActionPoints;
-
+		//added by konstantin
+		HealthPoints = Statics.HealthPoints;
+		//
         LastAction = false;
         RoundFinished = false;
         Active = false;
@@ -259,4 +270,5 @@ public class PlayerActions : MonoBehaviour
             RoundStart();
         }
     }
+
 }

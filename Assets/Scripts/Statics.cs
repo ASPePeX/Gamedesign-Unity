@@ -10,6 +10,9 @@ public static class Statics
     private const int _verticalTiles = 20;
     private const int _tileSize = 32;
     private const int _actionPoints = 7;
+	//added by konstantin
+	private const int _healthPoints = 100;
+	//
 
     public static int HorizontalTiles
     {
@@ -30,7 +33,12 @@ public static class Statics
     {
         get { return _actionPoints; }
     }
-
+	//added by konstantin
+	public static int HealthPoints
+	{
+		get { return _healthPoints; }
+	}
+	//
     #endregion
 
     #region Color variables

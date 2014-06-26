@@ -17,9 +17,11 @@ public class ItemProperties : MonoBehaviour
     public bool isSecondaryWeapon;
     public int ammoAmount;
 
+    public bool isArmor;
+    public float damageResistance;
+    public float infectionResistance;
+
+    //Enemy Damage
     public bool canInfect;
     public float infectionChance;
-
-    public bool isArmor;
-    public float damageReduction;
 }

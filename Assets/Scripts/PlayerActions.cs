@@ -16,6 +16,7 @@ public class PlayerActions : MonoBehaviour
 	//added by konstantin
 	private int _healthPoints;
 	//
+    private bool _isInfected;
 
     private IntVector2 _startPosition;
     private IntVector2 _finalPosition;
@@ -26,6 +27,7 @@ public class PlayerActions : MonoBehaviour
 
     private int _activeItem;
     private int _primaryWeapon;
+    private int _activeArmor;
     
     private GameObject _level;
     private GameObject[] _availableItems;
@@ -88,6 +90,18 @@ public class PlayerActions : MonoBehaviour
     {
         get { return _primaryWeapon; }
         set { _primaryWeapon = value; }
+    }
+
+    public bool IsInfected
+    {
+        get { return _isInfected; }
+        set { _isInfected = value; }
+    }
+
+    public int ActiveArmor
+    {
+        get { return _activeArmor; }
+        set { _activeArmor = value; }
     }
 
     #region PlayerGhosts
@@ -269,6 +283,11 @@ public class PlayerActions : MonoBehaviour
             Debug.Log("Restart received" + _ghosts.Count);
             RoundStart();
         }
+    }
+
+    public void RemoveItem(GameObject item)
+    {
+        _items.Remove(item);
     }
 
 }

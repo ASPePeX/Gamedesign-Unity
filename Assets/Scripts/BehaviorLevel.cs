@@ -207,7 +207,6 @@ public class BehaviorLevel : MonoBehaviour {
                     DrawMovement(activePlayerScript.FinalPosition, activePlayerScript.ActionPoints, activePlayerScript.LastAction);
                 }
                 //if we click on an item in range
-                    //ToDo: Check if there is space in the players inventory
                 else if (Statics.MovingToTileCost(clickTilePosition, _activePlayer) <= 3 && activePlayerScript.ActionPoints > 1 && _items[clickTilePosition.x, clickTilePosition.y] != null && _items[clickTilePosition.x, clickTilePosition.y].activeSelf && _dropItem == null)
                 {
                     if (activePlayerScript.Items.Count < 4)

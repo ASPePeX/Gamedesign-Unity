@@ -134,29 +134,27 @@ public class PlayerActions : MonoBehaviour
         {
             if (Statics.PosToTile(_ghosts[i].transform.position.x, _ghosts[i].transform.position.y).Equals(removePosition))
             {
-                found = true;
-            }
-
-            Destroy(_ghosts[i]);
-            _ghosts.RemoveAt(i);
-
-            if (found)
-            {
-                if (i > 0)
-                {
-                    FinalPosition = Statics.PosToTile(_ghosts[i - 1].transform.position.x, _ghosts[i - 1].transform.position.y);
-                    ActionPoints = Statics.ActionPoints - Statics.MovingToTileCost(Statics.PosToTile(_ghosts[i - 1].transform.position.x, _ghosts[i - 1].transform.position.y), Statics.PosToTile(transform.position.x, transform.position.y));
-                }
-                else
-                {
-                    RoundStart();
-                }
-
-
+                FinalPosition = removePosition;
                 break;
             }
-
+            else
+            {
+                Destroy(_ghosts[i]);
+                _ghosts.RemoveAt(i); 
+            }
         }
+
+        int newActionpoints = Statics.ActionPoints;
+        IntVector2 lastPosition = StartPosition;
+
+        foreach (GameObject ghost in _ghosts)
+        {
+            IntVector2 thisPosition = Statics.PosToTile(ghost.transform.position);
+            newActionpoints -= Statics.MovingToTileCost(lastPosition, thisPosition);
+            lastPosition = thisPosition;
+        }
+        ActionPoints = newActionpoints;
+
         return FinalPosition;
     }
 

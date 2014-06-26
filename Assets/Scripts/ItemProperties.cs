@@ -1,8 +1,11 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using System.Collections;
 
 public class ItemProperties : MonoBehaviour
 {
+    public int RangeInActionpoints;
+    
     public bool canHeal;
     public int healAmount;
 
@@ -10,7 +13,6 @@ public class ItemProperties : MonoBehaviour
 
     public bool isWeapon;
     public int damageAmount;
-    public int weaponRange;
 
     public bool isSecondaryWeapon;
     public int ammoAmount;

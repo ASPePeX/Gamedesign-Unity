@@ -113,6 +113,14 @@ public static class Statics
         return new Vector2(tile.x * (TileSize / 100f) - (TileSize / 100f / 2f * (HorizontalTiles - 1)), tile.y * (TileSize / 100f) - (TileSize / 100f / 2f * (VerticalTiles - 1)));
     }
 
+    public static int MovingToTileCost(GameObject go1, GameObject go2)
+    {
+        PlayerActions script1 = (PlayerActions)go1.GetComponent(typeof(PlayerActions));
+        PlayerActions script2 = (PlayerActions)go2.GetComponent(typeof(PlayerActions));
+
+        return MovingToTileCost(script1.FinalPosition, script2.FinalPosition);
+    }
+
     public static int MovingToTileCost(IntVector2 tileTargetPosition, GameObject player)
     {
         PlayerActions playerScript = (PlayerActions)player.GetComponent(typeof(PlayerActions));
@@ -121,6 +129,7 @@ public static class Statics
 
         return (int)Math.Ceiling(Mathf.Sqrt(Mathf.Pow(playerScript.FinalPosition.x - tileTargetPosition.x, 2) + Mathf.Pow(playerScript.FinalPosition.y - tileTargetPosition.y, 2)) * 2);
     }
+
     public static int MovingToTileCost(IntVector2 position1, IntVector2 position2)
     {
         return (int)Math.Ceiling(Mathf.Sqrt(Mathf.Pow(position1.x - position2.x, 2) + Mathf.Pow(position1.y - position2.y, 2)) * 2);
@@ -155,4 +164,36 @@ public struct IntVector2
         return x + ", " + y;
     }
 
+}
+
+public struct ActionEntry
+{
+    private GameObject _goFrom;
+    private GameObject _item;
+    private GameObject _goTo;
+
+    public ActionEntry(GameObject goFrom, GameObject item, GameObject goTo) : this()
+    {
+        GoFrom = goFrom;
+        Item = item;
+        GoTo = goTo;
+    }
+
+    public GameObject GoFrom
+    {
+        get { return _goFrom; }
+        set { _goFrom = value; }
+    }
+
+    public GameObject Item
+    {
+        get { return _item; }
+        set { _item = value; }
+    }
+
+    public GameObject GoTo
+    {
+        get { return _goTo; }
+        set { _goTo = value; }
+    }
 }

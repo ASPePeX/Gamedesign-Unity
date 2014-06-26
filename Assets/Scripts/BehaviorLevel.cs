@@ -37,6 +37,12 @@ public class BehaviorLevel : MonoBehaviour {
 
     private bool refresh;
 
+    public GameObject[] Players
+    {
+        get { return _players; }
+        set { _players = value; }
+    }
+
 // ReSharper disable once UnusedMember.Local
     public void Start ()
     {
@@ -60,7 +66,7 @@ public class BehaviorLevel : MonoBehaviour {
         _availableItems = GetComponent<AvailableItems>()._items;
 
         _overlay = new GameObject[Statics.HorizontalTiles, Statics.VerticalTiles];
-        _players = new GameObject[PlayerSearchTarget.childCount];
+        Players = new GameObject[PlayerSearchTarget.childCount];
         _enemies = new GameObject[Statics.HorizontalTiles, Statics.VerticalTiles];
         _items = new GameObject[Statics.HorizontalTiles, Statics.VerticalTiles];
 //        _activePlayer = new GameObject();
@@ -82,7 +88,7 @@ public class BehaviorLevel : MonoBehaviour {
 
         for (int i = 0; i < PlayerSearchTarget.childCount; i++)
         {
-            _players[i] = PlayerSearchTarget.GetChild(i).gameObject;
+            Players[i] = PlayerSearchTarget.GetChild(i).gameObject;
         }
 
         for (int i = 0; i < EnemySearchTarget.childCount; i++)
@@ -124,13 +130,13 @@ public class BehaviorLevel : MonoBehaviour {
             //If no player is active, select an active player
 	        if (_activePlayer == null)
 	        {
-	            for (int i = 0; i < _players.Length; i++)
+	            for (int i = 0; i < Players.Length; i++)
 	            {
-	                PlayerActions currentPlayerScript = (PlayerActions) _players[i].GetComponent(typeof (PlayerActions));
+	                PlayerActions currentPlayerScript = (PlayerActions) Players[i].GetComponent(typeof (PlayerActions));
 
                     if (currentPlayerScript.StartPosition.Equals(clickTilePosition) && !currentPlayerScript.RoundFinished)
                     {
-                        _activePlayer = _players[i];
+                        _activePlayer = Players[i];
                         currentPlayerScript.Active = true;
                         DrawMovement(currentPlayerScript.StartPosition, currentPlayerScript.ActionPoints, currentPlayerScript.LastAction);
                     }
@@ -242,9 +248,9 @@ public class BehaviorLevel : MonoBehaviour {
             //this is set and evaluated by the following for loop
             bool isRoundDoneFlag = true;
 
-            for (int i = 0; i < _players.Length; i++)
+            for (int i = 0; i < Players.Length; i++)
 	        {
-                PlayerActions playerScript = (PlayerActions)_players[i].GetComponent(typeof(PlayerActions));
+                PlayerActions playerScript = (PlayerActions)Players[i].GetComponent(typeof(PlayerActions));
 	            if (!playerScript.RoundFinished)
 	            {
 	                isRoundDoneFlag = false;
@@ -255,6 +261,8 @@ public class BehaviorLevel : MonoBehaviour {
 	        {
                 //next round
                 BroadcastMessage("MessageHandler", "NewRound");
+
+                //ToDo: Call Action Queue to handle interactions
 
                 //clearing out inactive items
                 for (int i = 0; i < Statics.HorizontalTiles; i++)
@@ -456,7 +464,7 @@ public class BehaviorLevel : MonoBehaviour {
     // Returns true if a player, a player ghost or an item ghost is on a tile
     private bool CheckIfPlayerOnTile(IntVector2 tilePosition)
     {
-        foreach (GameObject player in _players)
+        foreach (GameObject player in Players)
         {
             PlayerActions playerScript = player.GetComponent<PlayerActions>();
 

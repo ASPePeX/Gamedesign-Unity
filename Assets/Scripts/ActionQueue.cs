@@ -51,7 +51,7 @@ public class ActionQueue : MonoBehaviour
                     Destroy(ae.Item);
                 }
             }
-            else if (ItemScript.doesDesinfect)
+            if (ItemScript.doesDesinfect)
             {
                 if (ae.GoFrom.CompareTag("Player") && ae.GoTo.CompareTag("Player"))
                 {
@@ -60,7 +60,7 @@ public class ActionQueue : MonoBehaviour
                     Destroy(ae.Item);
                 }
             }
-            else if (ItemScript.isWeapon)
+            if (ItemScript.isWeapon)
             {
                 if (ae.GoFrom.CompareTag("Player") && ae.GoTo.CompareTag("Enemy"))
                 {

@@ -5,11 +5,11 @@ using System;
 public class GUIControl : MonoBehaviour
 {
 	private Rect[] windowRect = {
-				new Rect (0, 0, 128, 64),
-				new Rect (0, 0, 128, 64),
-				new Rect (0, 0, 128, 64),
-				new Rect (0, 0, 128, 64)
-		};
+		new Rect (0, 0, 128, 64),
+		new Rect (0, 0, 128, 64),
+		new Rect (0, 0, 128, 64),
+		new Rect (0, 0, 128, 64)
+	};
 	private Rect[] windowCloseRect = {
 		new Rect (350, 200, 20, 20),
 		new Rect (350, 200, 20, 20),
@@ -24,33 +24,33 @@ public class GUIControl : MonoBehaviour
 	private int[] hpPlayer = new int[4];
 	private bool[] infectedPlayer = {true,false,false,false};
 	private int[] apPlayer = {7,5,7,7};
-	private int[,] inventory = {{1,2,3,0},{2,1,0,0},{0,2,1,0},{0,2,0,0}};
+	private int[,] inventory = {{1,4,3,0},{2,1,0,0},{0,2,1,0},{0,2,0,0}};
 	private int inventoryActive = -1;
 	private bool[,] inventoryUsed = {{false,false,false,false},{false,false,false,false},{false,false,false,false},{false,false,false,false}};
 	private bool[] actionButtonsActive = {false,false};
-	private Texture2D[][] inventoryIcons = new Texture2D[3][];
-	private string[] itemTypes = {"weapon","weapon","medi"};
+	private Texture2D[] inventoryIcons;
+	private string[] itemTypes = {"weapon","weapon","medi","protection"};
 	private int[] primaryWeapon = {5,5,5,5};
-	private int[] inventoryPreSelected = {0,1,1};
+	private int[] primaryProtection = {5,5,5,5};
+	private int[] inventoryPreSelected = {0,1,1,0};
 	private bool attack = false;
 	private int infectedDamage = 0;
 	private int infectionDamage = 25;
 	private float infectedTimer = 0.0f;
 	private Texture2D whiteTex;
 
-	public Texture2D[] rifle;
-	public Texture2D[] baseball;
-	public Texture2D[] medipack;
-	public Texture2D[] ablegen;
-	public Texture2D[] benutzen;
-	public Texture2D[] aufnehmen;
+	public Texture2D rifle;
+	public Texture2D baseball;
+	public Texture2D medipack;
+	public Texture2D ablegen;
+	public Texture2D benutzen;
+	public Texture2D aufnehmen;
 	public Texture2D[] playerButtons;
 	public Texture2D[] attackButtons;
-	public Texture2D inventoryVoid;
 	public Texture2D hpRaster;
 	public Texture2D apRaster;
-	public Texture2D inventoryBG;
 	public Texture2D[] closeButtons;
+	public Texture2D schutzweste;
 	public GUIStyle buttonRaw;
 	public GUISkin skinPlayerToggle;
 	public GUISkin skinWindow;
@@ -58,31 +58,25 @@ public class GUIControl : MonoBehaviour
 		
 	private Texture2D framePrimary;
 	private Texture2D frameSelected;
+	private Texture2D frameProtection;
 	/*
 	 * 
 	 * wenn aktiver spiel fenster zu macht --> meldung welt, dass spieler inaktiv wird 
 	 * 
-	 * close button als window overlay
-	 * 
 	 */
-
-	public GameObject[] players;
-	public PlayerActions[] playerReferences;
+	private GameObject[] players;
+	private PlayerActions[] playerReferences;
 	void Start(){
 		framePrimary = createFrameTexture (new Color (0, 1, 0));
 		frameSelected = createFrameTexture (new Color (0,0, 1));
+		frameProtection = createFrameTexture (new Color (1,0, 0));
 		whiteTex = createBlankTexture (new Color (1, 1, 1, 1));
+		inventoryIcons =  new Texture2D[4];
 		inventoryIcons [0] = rifle;
 		inventoryIcons [1] = baseball;
 		inventoryIcons [2] = medipack;
-		//Get Player Data
-		/*
-		 * Number of Players
-		 * Healthpoints
-		 * Actionpoints
-		 * Inventory Items / Weapons / Type of Items
-		 * 
-		 */
+		inventoryIcons [3] = schutzweste;
+
 		Transform playerContainer = GameObject.Find ("Players").transform;
 		players = new GameObject[playerContainer.childCount];
 		playerReferences = new PlayerActions[playerContainer.childCount];
@@ -94,6 +88,19 @@ public class GUIControl : MonoBehaviour
 			hpPlayer[i] = Statics.HealthPoints;
 		}
 		primaryWeapon [0] = 0;
+
+		getItemTextures ();
+	}
+
+	void getItemTextures(){
+		GameObject[] items = GameObject.Find ("Level").GetComponent<AvailableItems>()._items;
+	}
+
+	Texture2D getTexFromGameObject(GameObject obj){
+		SpriteRenderer spriteRenderer = obj.GetComponent<SpriteRenderer> ();
+		Sprite sprt = spriteRenderer.sprite;
+		Texture2D tex = sprt.texture;
+		return tex;
 	}
 
 	String returnSelectedGUIActions(){
@@ -115,9 +122,15 @@ public class GUIControl : MonoBehaviour
 				activeGUIPlayer[i] = true;
 				someoneActive = true;
 			}	
-
+			
 			apPlayer[i] = playerReferences[i].ActionPoints;
 			hpPlayer[i] = playerReferences[i].HealthPoints;
+			Debug.Log("Ghost Item");
+			Debug.Log(playerReferences[i].GhostItem);
+			if(playerReferences[i].GhostItem!=null){
+				Texture2D tex = getTexFromGameObject(playerReferences[i].GhostItem);
+				inventoryIcons[3] = tex;
+			}
 		}
 		if (!someoneActive) {
 			activePlayer = 10;	
@@ -167,8 +180,8 @@ public class GUIControl : MonoBehaviour
 		for(int i=0;i<windowCloseRect.Length;i++){
 			if (activeGUIPlayer [i]) {
 				if(i==1||i==2){
-					windowCloseRect[i].x = -windowRect[i].x-CLOSE_SIZE/2 +4;
-					windowCloseRect[i].y = -windowRect[i].y-CLOSE_SIZE/2 + 4;
+					windowCloseRect[i].x = -windowRect[i].x-CLOSE_SIZE/2+2;
+					windowCloseRect[i].y = -windowRect[i].y-CLOSE_SIZE/2+2;
 				} else {
 					windowCloseRect[i].x = windowRect[i].x-CLOSE_SIZE/2;
 					windowCloseRect[i].y = windowRect[i].y-CLOSE_SIZE/2;
@@ -208,6 +221,7 @@ public class GUIControl : MonoBehaviour
 		if(GUI.Button(new Rect(0,0,CLOSE_SIZE,CLOSE_SIZE),closeButtons[offsetID],buttonRaw)){
 			playerEnd(offsetID);
 		}
+		GUI.BringWindowToFront(windowID);
 	}
 
 	void WindowGUIControl (int windowID)
@@ -259,19 +273,12 @@ public class GUIControl : MonoBehaviour
 		GUI.DrawTexture (new Rect(apPos.x,apPos.y,apPartWidth * apPlayer[windowID],hpHeight),createBlankTexture (new Color (0, 0, 1, 0.5f)));
 		//AP Grid
 		GUI.DrawTexture (new Rect(apPos.x,apPos.y,hpWidth,hpHeight),apRaster);
- 
 
-		//Close Button for the interface window
-		//GUIUtility.RotateAroundPivot (90, new Vector2(7.5f,7.5f));
-		if (GUI.Button (new Rect (-CLOSE_SIZE/2 + ((windowID==1||windowID==2) ? 1 : 0), -CLOSE_SIZE/2+((windowID==1||windowID==2) ? 1 : 0), CLOSE_SIZE, CLOSE_SIZE), closeButtons[windowID],buttonRaw)) {
-			playerEnd(windowID);
-		}
-		//GUIUtility.RotateAroundPivot (-90, new Vector2(7.5f,7.5f));
 		//Display the Action Buttons and Inventory Items
 
 		//Action Buttons
 		if(inventoryActive!=-1 && activePlayer==windowID){
-			Texture firstAction = (attack) ? attackButtons[0] : ablegen [Convert.ToInt32 (actionButtonsActive [0])];
+			Texture firstAction = (attack) ? attackButtons[0] : ablegen;
 			if (GUI.Button (new Rect (64, 0, 32, 32), firstAction)) {
 				actionButtonsActive[0] = !actionButtonsActive[0];
 				actionButtonsActive[1] = false;
@@ -280,13 +287,15 @@ public class GUIControl : MonoBehaviour
 					Debug.Log("notice world that attack number has decreased");
 				}
 			}
-			Texture secondAction = (attack) ? attackButtons[1] : benutzen [Convert.ToInt32 (actionButtonsActive [0])];
-			if (GUI.Button (new Rect (96, 0, 32, 32), secondAction)) {
-				actionButtonsActive[1] = !actionButtonsActive[1];
-				actionButtonsActive[0] = false;
-				if(attack){
-					//notice world that attack number has increased
-					Debug.Log("notice world that attack number has increased");
+			if(inventoryActive!=-1&&itemTypes[inventory[windowID,inventoryActive]-1]!="protection"){
+				Texture secondAction = (attack) ? attackButtons[1] : benutzen;
+				if (GUI.Button (new Rect (96, 0, 32, 32), secondAction)) {
+					actionButtonsActive[1] = !actionButtonsActive[1];
+					actionButtonsActive[0] = false;
+					if(attack){
+						//notice world that attack number has increased
+						Debug.Log("notice world that attack number has increased");
+					}
 				}
 			}
 			if(actionButtonsActive[0]){
@@ -312,7 +321,7 @@ public class GUIControl : MonoBehaviour
 			} else {
 				int index = inventory [windowID, i] - 1;
 				int active = (inventoryActive==i) ? 1 : 0;
-				if(GUI.Button (new Rect (32 * i, 32, 32, 32), inventoryIcons [index] [active]) && windowID==activePlayer){
+				if(GUI.Button (new Rect (32 * i, 32, 32, 32), inventoryIcons [index]) && windowID==activePlayer){
 					if(inventoryUsed[windowID,i]){
 						//dropped item click-->player gets the item back
 						inventoryUsed[windowID,i] = false;
@@ -339,10 +348,17 @@ public class GUIControl : MonoBehaviour
 						Array.Clear(inventoryActive,0,inventoryActive.Length);
 						inventoryActive[i] = !origin;*/
 						attack = false;
+
+						if(itemTypes[inventory[windowID,i]-1]=="protection"){
+							primaryProtection[windowID] = i;
+						}
 					}
 				}
 				if(primaryWeapon[windowID] == i){
 					GUI.DrawTexture(new Rect (32 * i + 2, 34, 28, 28),framePrimary);
+				}
+				if(primaryProtection[windowID] == i){
+					GUI.DrawTexture(new Rect (32 * i + 2, 34, 28, 28),frameProtection);
 				}
 				if(inventoryActive==i && windowID==activePlayer){
 					GUI.DrawTexture(new Rect (32 * i, 32, 32, 32),frameSelected);

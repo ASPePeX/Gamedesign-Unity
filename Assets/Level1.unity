@@ -1532,41 +1532,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9d1d6f362ed2a2b4ba874f27ab8456ab, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  rifle:
-  - {fileID: 2800000, guid: 5a4e2d46d6aab8e46998f1481cfcce07, type: 3}
-  - {fileID: 2800000, guid: 5a4e2d46d6aab8e46998f1481cfcce07, type: 3}
-  baseball:
-  - {fileID: 2800000, guid: 8e9ff0af36d928d46b22c29346594c57, type: 3}
-  - {fileID: 2800000, guid: 8e9ff0af36d928d46b22c29346594c57, type: 3}
-  medipack:
-  - {fileID: 2800000, guid: d627e481030fa4343bfe5a1aad138228, type: 3}
-  - {fileID: 2800000, guid: d627e481030fa4343bfe5a1aad138228, type: 3}
-  ablegen:
-  - {fileID: 2800000, guid: 7f5b47555b0b29a4ea14cb83b1b7c82f, type: 3}
-  - {fileID: 2800000, guid: 1122a8a73e0ba0d44ac307d40f061718, type: 3}
-  benutzen:
-  - {fileID: 2800000, guid: f594e44a497ee544386c27d30a580826, type: 3}
-  - {fileID: 2800000, guid: 1706dd217ffa63a4495ae0ba02e678dd, type: 3}
-  aufnehmen:
-  - {fileID: 2800000, guid: 97eb7ae0adcf09a46a1958d05e7aeb51, type: 3}
-  - {fileID: 2800000, guid: fbf15c62a59fc2c4c8b6a4f9f995d976, type: 3}
+  rifle: {fileID: 2800000, guid: 5a4e2d46d6aab8e46998f1481cfcce07, type: 3}
+  baseball: {fileID: 2800000, guid: 8e9ff0af36d928d46b22c29346594c57, type: 3}
+  medipack: {fileID: 2800000, guid: d627e481030fa4343bfe5a1aad138228, type: 3}
+  ablegen: {fileID: 2800000, guid: 7f5b47555b0b29a4ea14cb83b1b7c82f, type: 3}
+  benutzen: {fileID: 2800000, guid: f594e44a497ee544386c27d30a580826, type: 3}
+  aufnehmen: {fileID: 2800000, guid: 97eb7ae0adcf09a46a1958d05e7aeb51, type: 3}
   playerButtons:
   - {fileID: 2800000, guid: c348dcdb726088646b69b41003b25558, type: 3}
   - {fileID: 2800000, guid: caa46de79f70284489e38134eead60e5, type: 3}
   - {fileID: 2800000, guid: 2ca93c43fad0c4b4f8a7623a35d6cbd2, type: 3}
   - {fileID: 2800000, guid: d768c58b48b91ad4ebe3608b45f10321, type: 3}
-  attackButtons:
-  - {fileID: 2800000, guid: d33656fe20d35ad4485afdeba2d92429, type: 3}
-  - {fileID: 2800000, guid: 5c8ca33d6f9dd5c4e9d0810e31ba9cc2, type: 3}
-  inventoryVoid: {fileID: 2800000, guid: 612354b12205ec2468ea4d3f72131b8f, type: 3}
+  attackButtons: []
   hpRaster: {fileID: 2800000, guid: 2a10aa35dd836ed4995d03046b98a364, type: 3}
   apRaster: {fileID: 2800000, guid: 80769b5ec59a80e499a225b00ce7aaa0, type: 3}
-  inventoryBG: {fileID: 2800000, guid: e7337d1407ee4d544a2679ca2cbcf20a, type: 3}
   closeButtons:
   - {fileID: 2800000, guid: 3299519444804ca44bd6c82a6068aeaa, type: 3}
   - {fileID: 2800000, guid: 6ce3b9a422bc49c49ac287759cfda593, type: 3}
   - {fileID: 2800000, guid: 82f419989aaf7254eb3854d679739a9b, type: 3}
   - {fileID: 2800000, guid: 7a755187172588c409a4c266413ebb44, type: 3}
+  schutzweste: {fileID: 2800000, guid: ea97f46ed7cb30447ae1361eb57f573d, type: 3}
   buttonRaw:
     m_Name: 
     m_Normal:
@@ -1629,8 +1614,6 @@ MonoBehaviour:
   skinPlayerToggle: {fileID: 11400000, guid: 82f7601925024ae4294f72ef85f57bdc, type: 2}
   skinWindow: {fileID: 11400000, guid: b1640edba86531846b9f0715406dc3d3, type: 2}
   skinCloseButton: {fileID: 11400000, guid: 704b90f065635d84c9a414c92b473396, type: 2}
-  players: []
-  playerReferences: []
 --- !u!1 &338552861
 GameObject:
   m_ObjectHideFlags: 0

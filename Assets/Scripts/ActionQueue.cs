@@ -1,21 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
+﻿using System.Collections.Generic;
 using UnityEngine;
-using System.Collections;
-using Random = UnityEngine.Random;
 
 public class ActionQueue : MonoBehaviour
 {
-    private BehaviorLevel _level;
     private List<ActionEntry> _actions;
 
-	// Use this for initialization
-	void Start ()
-	{
-	    _level = this.GetComponent<BehaviorLevel>();
+    // Use this for initialization
+    private void Start()
+    {
         _actions = new List<ActionEntry>();
-	}
+    }
 
     public void EvaluateActions()
     {
@@ -39,14 +33,12 @@ public class ActionQueue : MonoBehaviour
             {
                 _actions.Remove(ae);
             }
-        }    
+        }
     }
-
 
     private void ExecuteAction(ActionEntry ae)
     {
-
-        ItemProperties ItemScript = ae.Item.GetComponent<ItemProperties>();
+        var ItemScript = ae.Item.GetComponent<ItemProperties>();
 
         if (ItemScript.RangeInActionpoints <= Statics.MovingToTileCost(ae.GoFrom, ae.GoTo))
         {
@@ -83,7 +75,7 @@ public class ActionQueue : MonoBehaviour
                 {
                     var goToScript = ae.GoTo.GetComponent<PlayerActions>();
 
-                    goToScript.HealthPoints -= (int) (ItemScript.damageAmount * (1 - goToScript.Items[goToScript.ActiveArmor].GetComponent<ItemProperties>().damageResistance));
+                    goToScript.HealthPoints -= (int) (ItemScript.damageAmount*(1 - goToScript.Items[goToScript.ActiveArmor].GetComponent<ItemProperties>().damageResistance));
 
                     if (ItemScript.canInfect)
                     {

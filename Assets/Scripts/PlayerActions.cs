@@ -23,7 +23,7 @@ public class PlayerActions : MonoBehaviour
     private List<GameObject> _ghosts;
     private GameObject _ghostItem;
 
-    private List<GameObject> _items;
+    public List<GameObject> _items;
 
     private int _activeItem;
     private int _primaryWeapon;
@@ -234,7 +234,7 @@ public class PlayerActions : MonoBehaviour
 	    LastAction = false;
 
 	    GetComponent<SpriteRenderer>().color = playerColor;
-        HealthPoints = Statics.HealthPoints;
+        HealthPoints = Statics.HealthPoints -50;
 
         RoundStart();
 	}

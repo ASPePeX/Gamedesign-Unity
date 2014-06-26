@@ -13,6 +13,7 @@ public class ActionQueue : MonoBehaviour
 
     public void EvaluateActions()
     {
+        Debug.Log("Evaluating Actions!");
         foreach (ActionEntry ae in _actions)
         {
             ExecuteAction(ae);
@@ -23,6 +24,7 @@ public class ActionQueue : MonoBehaviour
     public void AddAction(GameObject goFrom, GameObject item, GameObject goTo)
     {
         _actions.Add(new ActionEntry(goFrom, item, goTo));
+        Debug.Log("Added Action to Queue!");
     }
 
     public void RemoveAction(GameObject player)
@@ -38,14 +40,17 @@ public class ActionQueue : MonoBehaviour
 
     private void ExecuteAction(ActionEntry ae)
     {
+        Debug.Log("Executing Action!");
         var ItemScript = ae.Item.GetComponent<ItemProperties>();
 
-        if (ItemScript.RangeInActionpoints <= Statics.MovingToTileCost(ae.GoFrom, ae.GoTo))
+        if (ItemScript.RangeInActionpoints >= Statics.MovingToTileCost(ae.GoFrom, ae.GoTo))
         {
+            Debug.Log("Enought Action Points! gogogo");
             if (ItemScript.canHeal)
             {
                 if (ae.GoFrom.CompareTag("Player") && ae.GoTo.CompareTag("Player"))
                 {
+                    Debug.Log("Healing!");
                     ae.GoTo.GetComponent<PlayerActions>().HealthPoints += ItemScript.healAmount;
                     ae.GoFrom.GetComponent<PlayerActions>().RemoveItem(ae.Item);
                     Destroy(ae.Item);

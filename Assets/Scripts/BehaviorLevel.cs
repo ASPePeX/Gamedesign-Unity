@@ -129,7 +129,7 @@ public class BehaviorLevel : MonoBehaviour {
         
         if (Input.GetKeyDown(KeyCode.O))
         {
-            StartUseItem(_availableItems[0].name);
+            StartUseItem(_availableItems[2].name);
         }
 
 	    if (Input.GetMouseButtonDown(0) || refresh)
@@ -159,23 +159,22 @@ public class BehaviorLevel : MonoBehaviour {
 	            PlayerActions activePlayerScript = (PlayerActions) _activePlayer.GetComponent(typeof (PlayerActions));
 
                 //if the gui sent us an item to drop
-                if (_dropItem != null && refresh && activePlayerScript.ActionPoints > 1)
-	            {
-	                DrawDropArea(activePlayerScript.FinalPosition, activePlayerScript.ActionPoints);
-	            }
+                if (_dropItem != null && refresh && activePlayerScript.ActionPoints > 0)
+                {
+                    DrawDropArea(activePlayerScript.FinalPosition, activePlayerScript.ActionPoints);
+                }
 
-                //if we click on the player
-	            else if (Statics.PosToTile(_activePlayer.transform.position.x, _activePlayer.transform.position.y).Equals(clickTilePosition))
-	            {
-                    _dropItem = null;
-                    activePlayerScript.ClearGhosts();
-                    
-	                DrawMovement(clickTilePosition, activePlayerScript.ActionPoints, activePlayerScript.LastAction);
-	            }
+                //if the gui sent us an item to drop
+                else if (_useItem != null && refresh && activePlayerScript.ActionPoints > 0)
+                {
+                    DrawDropArea(activePlayerScript.FinalPosition, activePlayerScript.ActionPoints);
+                    Debug.Log("Drawing use");
+                }
 
                 //if we click on a player && have an item ready
                 else if (CheckIfPlayerOnTile(clickTilePosition) && _useItem != null && activePlayerScript.ActionPoints > 0)
                 {
+                    Debug.Log("Useing!");
                     _dropItem = null;
                     GameObject toGo = null;
 
@@ -189,6 +188,17 @@ public class BehaviorLevel : MonoBehaviour {
                     }
                     actionQ.AddAction(_activePlayer, _useItem, toGo);
                 }
+
+                //if we click on the player
+	            else if (Statics.PosToTile(_activePlayer.transform.position.x, _activePlayer.transform.position.y).Equals(clickTilePosition))
+	            {
+                    _dropItem = null;
+                    activePlayerScript.ClearGhosts();
+                    
+	                DrawMovement(clickTilePosition, activePlayerScript.ActionPoints, activePlayerScript.LastAction);
+	            }
+
+
 
                 //if we click on an active players ghost
                 else if (activePlayerScript.CheckIfPlayerGhost(clickTilePosition))

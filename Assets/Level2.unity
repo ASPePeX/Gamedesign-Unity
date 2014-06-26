@@ -86,7 +86,7 @@ GameObject:
   - 114: {fileID: 8859686}
   m_Layer: 0
   m_Name: Enemy
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -638,7 +638,7 @@ GameObject:
   - 114: {fileID: 128735196}
   m_Layer: 0
   m_Name: Enemy
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -930,6 +930,7 @@ GameObject:
   - 4: {fileID: 230072397}
   - 212: {fileID: 230072396}
   - 114: {fileID: 230072395}
+  - 114: {fileID: 230072398}
   m_Layer: 0
   m_Name: Gun
   m_TagString: Untagged
@@ -984,6 +985,31 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1551635425}
+--- !u!114 &230072398
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 11400002, guid: 75c4ce6f7c5c35f489b798097f0900f2,
+    type: 2}
+  m_PrefabInternal: {fileID: 1244551299}
+  m_GameObject: {fileID: 230072394}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 73f031bb3042de6419e90d13c78f1808, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  RangeInActionpoints: 6
+  canHeal: 0
+  healAmount: 0
+  doesDesinfect: 0
+  isWeapon: 1
+  damageAmount: 10
+  isSecondaryWeapon: 0
+  ammoAmount: 0
+  isArmor: 0
+  damageResistance: 0
+  infectionResistance: 0
+  canInfect: 0
+  infectionChance: 0
 --- !u!1001 &234110269
 Prefab:
   m_ObjectHideFlags: 0
@@ -1978,7 +2004,7 @@ GameObject:
   - 114: {fileID: 392468389}
   m_Layer: 0
   m_Name: Enemy
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -3210,7 +3236,7 @@ GameObject:
   - 114: {fileID: 623544434}
   m_Layer: 0
   m_Name: Player4
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -3924,7 +3950,7 @@ GameObject:
   - 114: {fileID: 749827412}
   m_Layer: 0
   m_Name: Player3
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -4156,6 +4182,7 @@ GameObject:
   - 4: {fileID: 780831379}
   - 212: {fileID: 780831380}
   - 114: {fileID: 780831381}
+  - 114: {fileID: 780831382}
   m_Layer: 0
   m_Name: Gun
   m_TagString: Untagged
@@ -4210,6 +4237,31 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 05e250bc521106d4e90dff3bd848c67a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &780831382
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 11400002, guid: 75c4ce6f7c5c35f489b798097f0900f2,
+    type: 2}
+  m_PrefabInternal: {fileID: 1415047225}
+  m_GameObject: {fileID: 780831378}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 73f031bb3042de6419e90d13c78f1808, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  RangeInActionpoints: 6
+  canHeal: 0
+  healAmount: 0
+  doesDesinfect: 0
+  isWeapon: 1
+  damageAmount: 10
+  isSecondaryWeapon: 0
+  ammoAmount: 0
+  isArmor: 0
+  damageResistance: 0
+  infectionResistance: 0
+  canInfect: 0
+  infectionChance: 0
 --- !u!1 &789145927
 GameObject:
   m_ObjectHideFlags: 0
@@ -4620,6 +4672,7 @@ GameObject:
   - 4: {fileID: 872835850}
   - 212: {fileID: 872835849}
   - 114: {fileID: 872835848}
+  - 114: {fileID: 872835851}
   m_Layer: 0
   m_Name: Bat
   m_TagString: Untagged
@@ -4674,6 +4727,31 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1551635425}
+--- !u!114 &872835851
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 11400002, guid: c7620f9f0fe0c7a48aa844326e621664,
+    type: 2}
+  m_PrefabInternal: {fileID: 1446948832}
+  m_GameObject: {fileID: 872835847}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 73f031bb3042de6419e90d13c78f1808, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  RangeInActionpoints: 3
+  canHeal: 0
+  healAmount: 0
+  doesDesinfect: 0
+  isWeapon: 1
+  damageAmount: 10
+  isSecondaryWeapon: 0
+  ammoAmount: 0
+  isArmor: 0
+  damageResistance: 0
+  infectionResistance: 0
+  canInfect: 0
+  infectionChance: 0
 --- !u!1 &894585761
 GameObject:
   m_ObjectHideFlags: 0
@@ -4828,6 +4906,7 @@ GameObject:
   - 4: {fileID: 904141880}
   - 212: {fileID: 904141879}
   - 114: {fileID: 904141878}
+  - 114: {fileID: 904141881}
   m_Layer: 0
   m_Name: Bat
   m_TagString: Untagged
@@ -4882,6 +4961,31 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1551635425}
+--- !u!114 &904141881
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 11400002, guid: c7620f9f0fe0c7a48aa844326e621664,
+    type: 2}
+  m_PrefabInternal: {fileID: 733544450}
+  m_GameObject: {fileID: 904141877}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 73f031bb3042de6419e90d13c78f1808, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  RangeInActionpoints: 3
+  canHeal: 0
+  healAmount: 0
+  doesDesinfect: 0
+  isWeapon: 1
+  damageAmount: 10
+  isSecondaryWeapon: 0
+  ammoAmount: 0
+  isArmor: 0
+  damageResistance: 0
+  infectionResistance: 0
+  canInfect: 0
+  infectionChance: 0
 --- !u!1 &912988449
 GameObject:
   m_ObjectHideFlags: 0
@@ -5648,7 +5752,7 @@ GameObject:
   - 114: {fileID: 1065978439}
   m_Layer: 0
   m_Name: Player2
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -8856,6 +8960,7 @@ GameObject:
   - 4: {fileID: 1835245989}
   - 212: {fileID: 1835245990}
   - 114: {fileID: 1835245991}
+  - 114: {fileID: 1835245992}
   m_Layer: 0
   m_Name: Bat
   m_TagString: Untagged
@@ -8910,6 +9015,31 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 05e250bc521106d4e90dff3bd848c67a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &1835245992
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 11400002, guid: c7620f9f0fe0c7a48aa844326e621664,
+    type: 2}
+  m_PrefabInternal: {fileID: 150610006}
+  m_GameObject: {fileID: 1835245988}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 73f031bb3042de6419e90d13c78f1808, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  RangeInActionpoints: 3
+  canHeal: 0
+  healAmount: 0
+  doesDesinfect: 0
+  isWeapon: 1
+  damageAmount: 10
+  isSecondaryWeapon: 0
+  ammoAmount: 0
+  isArmor: 0
+  damageResistance: 0
+  infectionResistance: 0
+  canInfect: 0
+  infectionChance: 0
 --- !u!1 &1857070704
 GameObject:
   m_ObjectHideFlags: 0
@@ -8922,7 +9052,7 @@ GameObject:
   - 114: {fileID: 1857070706}
   m_Layer: 0
   m_Name: Player1
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

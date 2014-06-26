@@ -24,15 +24,16 @@ public class GUIControl : MonoBehaviour
 	private int[] hpPlayer = new int[4];
 	private bool[] infectedPlayer = {true,false,false,false};
 	private int[] apPlayer = {7,5,7,7};
-	private int[,] inventory = {{1,4,3,0},{2,1,0,0},{0,2,1,0},{0,2,0,0}};
+	private int[][] inventory; //= {{1,2,0,0},{1,2,0,0},{1,2,0,0},{1,2,0,0}};
 	private int inventoryActive = -1;
 	private bool[,] inventoryUsed = {{false,false,false,false},{false,false,false,false},{false,false,false,false},{false,false,false,false}};
 	private bool[] actionButtonsActive = {false,false};
 	private Texture2D[] inventoryIcons;
 	private string[] itemTypes = {"weapon","weapon","medi","protection"};
+	private string[] itemNames;
 	private int[] primaryWeapon = {5,5,5,5};
 	private int[] primaryProtection = {5,5,5,5};
-	private int[] inventoryPreSelected = {0,1,1,0};
+	private int[] inventoryPreSelected = {0,0,0,0};//in item properties speichern
 	private bool attack = false;
 	private int infectedDamage = 0;
 	private int infectionDamage = 25;
@@ -62,20 +63,33 @@ public class GUIControl : MonoBehaviour
 	/*
 	 * 
 	 * wenn aktiver spiel fenster zu macht --> meldung welt, dass spieler inaktiv wird 
+	 * gibt dazu methode in behaviourLevel
 	 * 
 	 */
 	private GameObject[] players;
 	private PlayerActions[] playerReferences;
 	void Start(){
+
+		inventory = new int[4][];
+		inventory [0] = new int[] {1,2,0,0};
+		inventory [1] = new int[] {1,2,0,0};
+		inventory [2] = new int[] {1,2,0,0};
+		inventory [3] = new int[] {1,2,0,0};
+
+
+
 		framePrimary = createFrameTexture (new Color (0, 1, 0));
 		frameSelected = createFrameTexture (new Color (0,0, 1));
 		frameProtection = createFrameTexture (new Color (1,0, 0));
 		whiteTex = createBlankTexture (new Color (1, 1, 1, 1));
-		inventoryIcons =  new Texture2D[4];
+
+
+
+		/*inventoryIcons =  new Texture2D[4];
 		inventoryIcons [0] = rifle;
 		inventoryIcons [1] = baseball;
 		inventoryIcons [2] = medipack;
-		inventoryIcons [3] = schutzweste;
+		inventoryIcons [3] = schutzweste;*/
 
 		Transform playerContainer = GameObject.Find ("Players").transform;
 		players = new GameObject[playerContainer.childCount];
@@ -87,14 +101,37 @@ public class GUIControl : MonoBehaviour
 			apPlayer[i] = Statics.ActionPoints;
 			hpPlayer[i] = Statics.HealthPoints;
 		}
+		getItemTextures ();
 		primaryWeapon [0] = 0;
 
-		getItemTextures ();
 	}
 
 	void getItemTextures(){
 		//get items and the properties and save them in arrays
 		GameObject[] items = GameObject.Find ("Level").GetComponent<AvailableItems>()._items;
+		Texture2D[] itemIcons = new Texture2D[items.Length];
+		string[] itemType = new string[items.Length];
+		itemNames = new string[items.Length];
+		for (int i=0; i<items.Length; i++) {
+			itemNames[i] = items[i].name;
+			itemIcons[i] = getTexFromGameObject(items[i]);
+			ItemProperties properties = items[i].GetComponent<ItemProperties>();
+			if(properties.isWeapon){
+				itemType[i] = "weapon";
+			} else if(properties.canHeal && properties.doesDesinfect){
+				itemType[i] = "dualpack";
+			} else if(properties.canHeal){
+				itemType[i] = "medi";
+			} else if(properties.doesDesinfect){
+				itemType[i] = "desinfection";
+			} else if(properties.isArmor){
+				itemType[i] = "protection";
+			}
+		}
+		//noch haesslich, spaeter komplett hier erstellen
+		inventoryIcons =  new Texture2D[itemIcons.Length];
+		inventoryIcons = itemIcons;
+		itemTypes = itemType;
 	}
 
 	Texture2D getTexFromGameObject(GameObject obj){
@@ -126,11 +163,17 @@ public class GUIControl : MonoBehaviour
 			
 			apPlayer[i] = playerReferences[i].ActionPoints;
 			hpPlayer[i] = playerReferences[i].HealthPoints;
-			Debug.Log("Ghost Item");
-			Debug.Log(playerReferences[i].GhostItem);
 			if(playerReferences[i].GhostItem!=null){
-				Texture2D tex = getTexFromGameObject(playerReferences[i].GhostItem);
-				inventoryIcons[3] = tex;
+				for(int j=0;j<itemNames.Length;j++){
+					if(itemNames[j]==playerReferences[i].GhostItem.name){
+						//for(int m=0;m<inventory[i]
+						int index = 3;//Array.IndexOf(inventory[i],0);
+						inventory[i][index] = j+1;
+						Debug.Log("index");
+						Debug.Log(j);
+						break;
+					}
+				}
 			}
 		}
 		if (!someoneActive) {
@@ -146,7 +189,7 @@ public class GUIControl : MonoBehaviour
 			inventoryActive = -1;
 			Array.Clear(actionButtonsActive,0,actionButtonsActive.Length);
 		}
-		if (GUI.Button (new Rect (200, 0, 100, 50), "Angreifen") && actionButtonsActive [1] &&  itemTypes[inventory[activePlayer,inventoryActive]-1] == "weapon") {
+		if (GUI.Button (new Rect (200, 0, 100, 50), "Angreifen") && actionButtonsActive [1] &&  itemTypes[inventory[activePlayer][inventoryActive]-1] == "weapon") {
 			attack = true;
 		}
 		/* END Simulation der Welt */
@@ -288,7 +331,7 @@ public class GUIControl : MonoBehaviour
 					Debug.Log("notice world that attack number has decreased");
 				}
 			}
-			if(inventoryActive!=-1&&itemTypes[inventory[windowID,inventoryActive]-1]!="protection"){
+			if(inventoryActive!=-1&&itemTypes[inventory[windowID][inventoryActive]-1]!="protection"){
 				Texture secondAction = (attack) ? attackButtons[1] : benutzen;
 				if (GUI.Button (new Rect (96, 0, 32, 32), secondAction)) {
 					actionButtonsActive[1] = !actionButtonsActive[1];
@@ -313,14 +356,14 @@ public class GUIControl : MonoBehaviour
 			} else {
 				GUI.color = new Color(1,1,1,1);
 			}
-			if (inventory [windowID, i] == 0) {
+			if (inventory [windowID][i] == 0) {
 				if(GUI.Button (new Rect (32 * i, 32, 32, 32),"")){
 					inventoryActive = -1;
 					Array.Clear(actionButtonsActive,0,actionButtonsActive.Length);
 					attack = false;
 				}
 			} else {
-				int index = inventory [windowID, i] - 1;
+				int index = inventory [windowID][i] - 1;
 				int active = (inventoryActive==i) ? 1 : 0;
 				if(GUI.Button (new Rect (32 * i, 32, 32, 32), inventoryIcons [index]) && windowID==activePlayer){
 					if(inventoryUsed[windowID,i]){
@@ -333,7 +376,7 @@ public class GUIControl : MonoBehaviour
 					} else {
 						//valid item click
 
-						if(itemTypes[inventory[windowID,i]-1]=="weapon"){
+						if(itemTypes[inventory[windowID][i]-1]=="weapon"){
 							primaryWeapon[windowID] = i;
 							Debug.Log("Main Weapon Change");
 							//say to player that main weapon has changed
@@ -350,7 +393,7 @@ public class GUIControl : MonoBehaviour
 						inventoryActive[i] = !origin;*/
 						attack = false;
 
-						if(itemTypes[inventory[windowID,i]-1]=="protection"){
+						if(itemTypes[inventory[windowID][i]-1]=="protection"){
 							primaryProtection[windowID] = i;
 						}
 					}

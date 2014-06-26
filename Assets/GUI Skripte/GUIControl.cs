@@ -93,6 +93,7 @@ public class GUIControl : MonoBehaviour
 	}
 
 	void getItemTextures(){
+		//get items and the properties and save them in arrays
 		GameObject[] items = GameObject.Find ("Level").GetComponent<AvailableItems>()._items;
 	}
 

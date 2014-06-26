@@ -79,7 +79,13 @@ public class PlayerActions : MonoBehaviour
         get { return _items; }
         set { _items = value; }
     }
-
+	//Added by Konstantin
+	public GameObject GhostItem
+	{
+		get { return _ghostItem; }
+		set { _ghostItem = value; }
+	}
+	//
     public int ActiveItem
     {
         get { return _activeItem; }

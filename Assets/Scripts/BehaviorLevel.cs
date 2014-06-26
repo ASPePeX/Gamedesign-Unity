@@ -6,6 +6,8 @@ public class BehaviorLevel : MonoBehaviour {
 
     private const int VisibilityRadius = 5;
 
+    private ActionQueue actionQ;
+
     private bool[,] _isVisible;
     private bool[,] _wasVisible;
 
@@ -34,6 +36,7 @@ public class BehaviorLevel : MonoBehaviour {
     private GameObject[] _availableItems;
 
     private GameObject _dropItem;
+    private GameObject _useItem;
 
     private bool refresh;
 
@@ -46,6 +49,8 @@ public class BehaviorLevel : MonoBehaviour {
 // ReSharper disable once UnusedMember.Local
     public void Start ()
     {
+        actionQ = this.GetComponent<ActionQueue>();
+
         _isTraversable = new bool[Statics.HorizontalTiles,Statics.VerticalTiles];
         for (int i = 0; i < Statics.HorizontalTiles; i++)
         {
@@ -117,10 +122,15 @@ public class BehaviorLevel : MonoBehaviour {
 
 // ReSharper disable once UnusedMember.Local
 	void Update () {
-	    if (Input.GetKeyDown(KeyCode.I))
-	    {
-	        StartDropItem(_availableItems[0].name);
-	    }
+        if (Input.GetKeyDown(KeyCode.I))
+        {
+            StartDropItem(_availableItems[0].name);
+        }
+        
+        if (Input.GetKeyDown(KeyCode.O))
+        {
+            StartUseItem(_availableItems[0].name);
+        }
 
 	    if (Input.GetMouseButtonDown(0) || refresh)
 	    {
@@ -163,6 +173,23 @@ public class BehaviorLevel : MonoBehaviour {
 	                DrawMovement(clickTilePosition, activePlayerScript.ActionPoints, activePlayerScript.LastAction);
 	            }
 
+                //if we click on a player && have an item ready
+                else if (CheckIfPlayerOnTile(clickTilePosition) && _useItem != null && activePlayerScript.ActionPoints > 0)
+                {
+                    _dropItem = null;
+                    GameObject toGo = null;
+
+                    foreach (GameObject otherGo in _players)
+                    {
+                        if (Statics.PosToTile(otherGo.transform.position).Equals(clickTilePosition))
+                        {
+                            toGo = otherGo;
+                            break;
+                        }
+                    }
+                    actionQ.AddAction(_activePlayer, _useItem, toGo);
+                }
+
                 //if we click on an active players ghost
                 else if (activePlayerScript.CheckIfPlayerGhost(clickTilePosition))
                 {
@@ -187,7 +214,7 @@ public class BehaviorLevel : MonoBehaviour {
                 }
 
                 //if we click on an empty tile a player can move to depending on their current action points
-                else if (!activePlayerScript.LastAction && Statics.MovingToTileCost(clickTilePosition, _activePlayer) <= activePlayerScript.ActionPoints && Statics.MovingToTileCost(clickTilePosition, _activePlayer) > 1 && Statics.MovingToTileCost(clickTilePosition, _activePlayer) <= 3  && _isTraversable[clickTilePosition.x, clickTilePosition.y] && _items[clickTilePosition.x, clickTilePosition.y] == null && _enemies[clickTilePosition.x, clickTilePosition.y] == null && _dropItem == null && !CheckIfPlayerOnTile(clickTilePosition))
+                else if (!activePlayerScript.LastAction && Statics.MovingToTileCost(clickTilePosition, _activePlayer) <= activePlayerScript.ActionPoints && Statics.MovingToTileCost(clickTilePosition, _activePlayer) > 1 && Statics.MovingToTileCost(clickTilePosition, _activePlayer) <= 3  && _isTraversable[clickTilePosition.x, clickTilePosition.y] && _items[clickTilePosition.x, clickTilePosition.y] == null && _enemies[clickTilePosition.x, clickTilePosition.y] == null && _dropItem == null && !CheckIfPlayerOnTile(clickTilePosition) && !CheckIfPlayerGhostOnTile(clickTilePosition) && !CheckIfItemGhostOnTile(clickTilePosition))
 	            {
                     activePlayerScript.AddPlayerGhost(clickTilePosition);
 
@@ -228,9 +255,11 @@ public class BehaviorLevel : MonoBehaviour {
                 else
                 {
                     _dropItem = null;
+                    _useItem = null;
                     DrawMovement(activePlayerScript.FinalPosition, activePlayerScript.ActionPoints, activePlayerScript.LastAction);
                 }
 	        }
+	        
             refresh = false;
 	    }
 
@@ -459,6 +488,17 @@ public class BehaviorLevel : MonoBehaviour {
         }
         refresh = true;
     }
+    public void StartUseItem(String itemName)
+    {
+        for (int i = 0; i < _availableItems.Length; i++)
+        {
+            if (_availableItems[i].name == itemName)
+            {
+                _useItem = _availableItems[i];
+            }
+        }
+        refresh = true;
+    }
 
     // Returns true if a player, a player ghost or an item ghost is on a tile
     private bool CheckIfPlayerOnTile(IntVector2 tilePosition)
@@ -467,7 +507,34 @@ public class BehaviorLevel : MonoBehaviour {
         {
             PlayerActions playerScript = player.GetComponent<PlayerActions>();
 
-            if (Statics.PosToTile(player.transform.position.x, player.transform.position.y).Equals(tilePosition) || playerScript.CheckIfPlayerGhost(tilePosition) || playerScript.CheckIfItemGhost(tilePosition))
+            if (Statics.PosToTile(player.transform.position.x, player.transform.position.y).Equals(tilePosition))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private bool CheckIfPlayerGhostOnTile(IntVector2 tilePosition)
+    {
+        foreach (GameObject player in Players)
+        {
+            PlayerActions playerScript = player.GetComponent<PlayerActions>();
+
+            if (playerScript.CheckIfPlayerGhost(tilePosition))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+    private bool CheckIfItemGhostOnTile(IntVector2 tilePosition)
+    {
+        foreach (GameObject player in Players)
+        {
+            PlayerActions playerScript = player.GetComponent<PlayerActions>();
+
+            if (playerScript.CheckIfItemGhost(tilePosition))
             {
                 return true;
             }

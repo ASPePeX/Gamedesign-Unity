@@ -95,9 +95,15 @@ public static class Statics
     #endregion
 
     #region Global convenience methods
+
+    public static IntVector2 PosToTile(Vector3 pos)
+    {
+        return PosToTile(pos.x, pos.y);
+    }
+    
     public static IntVector2 PosToTile(float posX, float posY)
     {
-        return new IntVector2(Mathf.Clamp(Mathf.FloorToInt((posX + (TileSize / 100f / 2f * (HorizontalTiles - 1))) / (TileSize / 100f)), 0, HorizontalTiles - 1), Mathf.Clamp(Mathf.FloorToInt((posY + (TileSize / 100f / 2f * (VerticalTiles - 1))) / (TileSize / 100f)), 0, VerticalTiles - 1));
+        return PosToTile(new Vector2(posX, posY));
     }
     public static IntVector2 PosToTile(Vector2 pos)
     {

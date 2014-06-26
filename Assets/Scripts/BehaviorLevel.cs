@@ -265,47 +265,7 @@ public class BehaviorLevel : MonoBehaviour {
 
 	    if (Input.GetKeyDown(KeyCode.P) && _activePlayer != null)
 	    {
-            ClearMovement();
-            PlayerActions activePlayerScript = (PlayerActions)_activePlayer.GetComponent(typeof(PlayerActions));
-	        activePlayerScript.RoundFinished = true;
-	        _activePlayer = null;
-			//added by konstantin
-			activePlayerScript.Active = false;
-			//
-
-            //this is set and evaluated by the following for loop
-            bool isRoundDoneFlag = true;
-
-            for (int i = 0; i < Players.Length; i++)
-	        {
-                PlayerActions playerScript = (PlayerActions)Players[i].GetComponent(typeof(PlayerActions));
-	            if (!playerScript.RoundFinished)
-	            {
-	                isRoundDoneFlag = false;
-	            }
-	        }
-
-	        if (isRoundDoneFlag)
-	        {
-                //next round
-                BroadcastMessage("MessageHandler", "NewRound");
-
-                //ToDo: Call Action Queue to handle interactions
-
-                //clearing out inactive items
-                for (int i = 0; i < Statics.HorizontalTiles; i++)
-                {
-                    for (int j = 0; j < Statics.VerticalTiles; j++)
-                    {
-                        if (_items[i, j] != null && !_items[i, j].activeSelf)
-                        {
-                            Destroy(_items[i, j]);
-                            _items[i, j] = null;
-                        }
-                    }
-                }
-                EvaluateTileOverlayAndVisibility();
-	        }
+            EndRoundForActivePlayer();
         }
 	}
 
@@ -390,6 +350,52 @@ public class BehaviorLevel : MonoBehaviour {
             IntVector2 tileXY = Statics.PosToTile(item.transform.position.x, item.transform.position.y);
 
             item.SetActive(_isVisible[tileXY.x, tileXY.y]);
+        }
+    }
+
+    public void EndRoundForActivePlayer()
+    {
+        ClearMovement();
+        PlayerActions activePlayerScript = (PlayerActions)_activePlayer.GetComponent(typeof(PlayerActions));
+        activePlayerScript.RoundFinished = true;
+        _activePlayer = null;
+        //added by konstantin
+        activePlayerScript.Active = false;
+        //
+
+        //this is set and evaluated by the following for loop
+        bool isRoundDoneFlag = true;
+
+        for (int i = 0; i < Players.Length; i++)
+        {
+            PlayerActions playerScript = (PlayerActions)Players[i].GetComponent(typeof(PlayerActions));
+            if (!playerScript.RoundFinished)
+            {
+                isRoundDoneFlag = false;
+            }
+        }
+
+        if (isRoundDoneFlag)
+        {
+            //next round
+            BroadcastMessage("MessageHandler", "NewRound");
+
+            //ToDo: Call Action Queue to handle interactions
+            actionQ.EvaluateActions();
+
+            //clearing out inactive items
+            for (int i = 0; i < Statics.HorizontalTiles; i++)
+            {
+                for (int j = 0; j < Statics.VerticalTiles; j++)
+                {
+                    if (_items[i, j] != null && !_items[i, j].activeSelf)
+                    {
+                        Destroy(_items[i, j]);
+                        _items[i, j] = null;
+                    }
+                }
+            }
+            EvaluateTileOverlayAndVisibility();
         }
     }
 

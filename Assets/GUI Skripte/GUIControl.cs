@@ -31,6 +31,8 @@ public class GUIControl : MonoBehaviour
 	private Texture2D[] inventoryIcons;
 	private string[] itemTypes = {"weapon","weapon","medi","protection"};
 	private string[] itemNames;
+	private bool[] hasGhostItem = {false,false,false,false};
+	private int[] ghostNumber = {5,5,5,5};
 	private int[] primaryWeapon = {5,5,5,5};
 	private int[] primaryProtection = {5,5,5,5};
 	private int[] inventoryPreSelected = {0,0,0,0};//in item properties speichern
@@ -68,6 +70,7 @@ public class GUIControl : MonoBehaviour
 	 */
 	private GameObject[] players;
 	private PlayerActions[] playerReferences;
+	private BehaviorLevel levelReference;
 	void Start(){
 
 		inventory = new int[4][];
@@ -90,6 +93,7 @@ public class GUIControl : MonoBehaviour
 		inventoryIcons [1] = baseball;
 		inventoryIcons [2] = medipack;
 		inventoryIcons [3] = schutzweste;*/
+		levelReference = GameObject.Find ("Level").GetComponent<BehaviorLevel> ();
 
 		Transform playerContainer = GameObject.Find ("Players").transform;
 		players = new GameObject[playerContainer.childCount];
@@ -163,14 +167,25 @@ public class GUIControl : MonoBehaviour
 			
 			apPlayer[i] = playerReferences[i].ActionPoints;
 			hpPlayer[i] = playerReferences[i].HealthPoints;
-			if(playerReferences[i].GhostItem!=null){
+			//if player has picked an item
+			if(playerReferences[i].GhostItem!=null && !hasGhostItem[i]){
 				for(int j=0;j<itemNames.Length;j++){
+					Debug.Log(itemNames[j]);
 					if(itemNames[j]==playerReferences[i].GhostItem.name){
 						//for(int m=0;m<inventory[i]
-						int index = 3;//Array.IndexOf(inventory[i],0);
+						int index = Array.IndexOf(inventory[i],0);
+						/*for(int k=0;k<inventory[i].Length;k++){
+							if(inventory[i][k]==0){
+								index = k;
+								break;
+							}
+						}*/
 						inventory[i][index] = j+1;
 						Debug.Log("index");
-						Debug.Log(j);
+						Debug.Log(j+1);
+						Debug.Log(i);
+						hasGhostItem[i]=true;
+						ghostNumber[i] = index;
 						break;
 					}
 				}
@@ -351,7 +366,7 @@ public class GUIControl : MonoBehaviour
 		
 		//Inventory Items
 		for (int i=0; i<4; i++) {
-			if(inventoryUsed[windowID,i] || windowID!=activePlayer){
+			if(inventoryUsed[windowID,i] || windowID!=activePlayer || ghostNumber[windowID]==i){
 				GUI.color = new Color(1,1,1,0.5f);
 			} else {
 				GUI.color = new Color(1,1,1,1);
@@ -365,7 +380,7 @@ public class GUIControl : MonoBehaviour
 			} else {
 				int index = inventory [windowID][i] - 1;
 				int active = (inventoryActive==i) ? 1 : 0;
-				if(GUI.Button (new Rect (32 * i, 32, 32, 32), inventoryIcons [index]) && windowID==activePlayer){
+				if(GUI.Button (new Rect (32 * i, 32, 32, 32), inventoryIcons [index]) && windowID==activePlayer && ghostNumber[windowID]!=i){
 					if(inventoryUsed[windowID,i]){
 						//dropped item click-->player gets the item back
 						inventoryUsed[windowID,i] = false;
@@ -418,6 +433,9 @@ public class GUIControl : MonoBehaviour
 	private void playerEnd(int id){
 		activeGUIPlayer [id] = false;		
 		playerRoundEnd [id] = true;
+		if(activePlayer==id){
+			levelReference.EndRoundForActivePlayer ();
+		}
 		if(Array.IndexOf(playerRoundEnd,false)==-1){
 			//Round End-->Notice Worl
 			Debug.Log("Round End-->Notice World");

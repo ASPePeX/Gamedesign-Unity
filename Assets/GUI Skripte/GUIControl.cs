@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 using System;
 
 public class GUIControl : MonoBehaviour
@@ -64,21 +65,14 @@ public class GUIControl : MonoBehaviour
 	private Texture2D frameProtection;
 	/*
 	 * 
-	 * wenn aktiver spiel fenster zu macht --> meldung welt, dass spieler inaktiv wird 
-	 * gibt dazu methode in behaviourLevel
+	 * wenn neue runde, dann variablen zuruecksetzen
 	 * 
 	 */
 	private GameObject[] players;
 	private PlayerActions[] playerReferences;
 	private BehaviorLevel levelReference;
 	void Start(){
-
 		inventory = new int[4][];
-		inventory [0] = new int[] {1,2,0,0};
-		inventory [1] = new int[] {1,2,0,0};
-		inventory [2] = new int[] {1,2,0,0};
-		inventory [3] = new int[] {1,2,0,0};
-
 
 
 		framePrimary = createFrameTexture (new Color (0, 1, 0));
@@ -106,7 +100,8 @@ public class GUIControl : MonoBehaviour
 			hpPlayer[i] = Statics.HealthPoints;
 		}
 		getItemTextures ();
-		primaryWeapon [0] = 0;
+		/*primaryWeapon [0] = 0;
+		playerReferences [0].PrimaryWeapon = 0;*/
 
 	}
 
@@ -150,8 +145,30 @@ public class GUIControl : MonoBehaviour
 		return "";
 	}
 
+
 	void OnGUI ()
 	{
+
+		if (Input.GetMouseButtonDown (0)) {
+			Vector2 mousePos = new Vector2 (Input.mousePosition.x, Input.mousePosition.y);
+			//Debug.Log(mousePos);
+
+			Debug.Log(GUIUtility.hotControl);
+
+			/*Rect[] mergeArr = new Rect[windowRect.Length+windowCloseRect.Length];
+			Array.Copy(windowRect,mergeArr,windowRect.Length);
+			Array.Copy(windowCloseRect,0,mergeArr,windowRect.Length,windowCloseRect.Length);
+			for(int i=0;i<mergeArr.Length;i++){
+				Debug.Log(mousePos);
+				Debug.Log(mergeArr[i].x+" "+mergeArr[i].y);
+				if(mousePos.x>mergeArr[i].x && mousePos.x<(mergeArr[i].x+mergeArr[i].width) && mousePos.y>mergeArr[i].y && mousePos.y<(mergeArr[i].y+mergeArr[i].height)){
+					Debug.Log("TREFFER");
+					break;
+				}
+			}*/
+
+			   //windowCloseRect
+		}
 
 		//Poll player data
 		bool someoneActive = false;
@@ -167,6 +184,16 @@ public class GUIControl : MonoBehaviour
 			
 			apPlayer[i] = playerReferences[i].ActionPoints;
 			hpPlayer[i] = playerReferences[i].HealthPoints;
+			primaryWeapon[i] = playerReferences[i].PrimaryWeapon;
+
+			List<GameObject> items = playerReferences[i].Items;
+			inventory[i] = new int[] {0,0,0,0};
+			for(int m=0;m<items.Count;m++){
+				if(m<4){
+					inventory[i][m] = Array.IndexOf(itemNames,items[m].name)+1;
+				}
+			}
+
 			//if player has picked an item
 			if(playerReferences[i].GhostItem!=null && !hasGhostItem[i]){
 				for(int j=0;j<itemNames.Length;j++){
@@ -190,6 +217,8 @@ public class GUIControl : MonoBehaviour
 					}
 				}
 			}
+
+
 		}
 		if (!someoneActive) {
 			activePlayer = 10;	
@@ -341,9 +370,15 @@ public class GUIControl : MonoBehaviour
 			if (GUI.Button (new Rect (64, 0, 32, 32), firstAction)) {
 				actionButtonsActive[0] = !actionButtonsActive[0];
 				actionButtonsActive[1] = false;
-				if(attack){
-					//notice world that attack number has decreased
-					Debug.Log("notice world that attack number has decreased");
+				if(actionButtonsActive[0]){
+					if(attack){
+						//notice world that attack number has decreased
+						Debug.Log("notice world that attack number has decreased");
+					}
+					if(firstAction==ablegen){
+						int id = inventory[windowID][inventoryActive];
+						levelReference.StartDropItem(itemNames[id-1]);
+					}
 				}
 			}
 			if(inventoryActive!=-1&&itemTypes[inventory[windowID][inventoryActive]-1]!="protection"){
@@ -351,9 +386,16 @@ public class GUIControl : MonoBehaviour
 				if (GUI.Button (new Rect (96, 0, 32, 32), secondAction)) {
 					actionButtonsActive[1] = !actionButtonsActive[1];
 					actionButtonsActive[0] = false;
-					if(attack){
-						//notice world that attack number has increased
-						Debug.Log("notice world that attack number has increased");
+					if(actionButtonsActive[1]){
+
+						if(attack){//nicht optimal
+							//notice world that attack number has increased
+							Debug.Log("notice world that attack number has increased");
+						}
+						if(secondAction==benutzen){
+							int id = inventory[windowID][inventoryActive];
+							levelReference.StartUseItem(itemNames[id-1]);
+						}
 					}
 				}
 			}
@@ -380,19 +422,21 @@ public class GUIControl : MonoBehaviour
 			} else {
 				int index = inventory [windowID][i] - 1;
 				int active = (inventoryActive==i) ? 1 : 0;
+
 				if(GUI.Button (new Rect (32 * i, 32, 32, 32), inventoryIcons [index]) && windowID==activePlayer && ghostNumber[windowID]!=i){
 					if(inventoryUsed[windowID,i]){
 						//dropped item click-->player gets the item back
 						inventoryUsed[windowID,i] = false;
 						Debug.Log("Item has been grabbed again");
 						/* 
-						 * Notice world that item has been grabbed again
+						 * Notice world that item has been grabbed again ToDo
 						 */
 					} else {
 						//valid item click
 
 						if(itemTypes[inventory[windowID][i]-1]=="weapon"){
 							primaryWeapon[windowID] = i;
+							playerReferences [windowID].PrimaryWeapon = i;
 							Debug.Log("Main Weapon Change");
 							//say to player that main weapon has changed
 						}
@@ -402,6 +446,9 @@ public class GUIControl : MonoBehaviour
 						} else {
 							inventoryActive = i;
 							actionButtonsActive[inventoryPreSelected[index]] = true;
+							if(inventoryPreSelected[index]==0){
+								levelReference.StartDropItem(itemNames[index]);
+							}
 						}
 						/*bool origin = inventoryActive[i];
 						Array.Clear(inventoryActive,0,inventoryActive.Length);
@@ -477,19 +524,23 @@ public class GUIControl : MonoBehaviour
 		return texture;
 	}
 
-	private void PollNewPlayerData(){
-		//infos der spieler neu pollen
-	}
 
-	private void dropActionFromWorld(bool success){
-		if (success) {
-			//item ghosten && actionbuttons hide
+	public void dropActionFromWorld(){
+		Debug.Log("drop success");
+		//item ghosten && actionbuttons hide
+		if (inventoryActive != -1) {
+			inventoryUsed[activePlayer,inventoryActive] = true;
+			inventoryActive = -1;
+			Array.Clear(actionButtonsActive,0,actionButtonsActive.Length);
 		}
 	}
 
-	private void attackActionFromWorld(bool success){
-		if (success) {
-			//show + & - actionbuttons
+	public void useActionFromWorld(){
+		Debug.Log("use success");
+		if (inventoryActive != -1) {
+			inventoryUsed[activePlayer,inventoryActive] = true;
+			inventoryActive = -1;
+			Array.Clear(actionButtonsActive,0,actionButtonsActive.Length);
 		}
 	}
 

@@ -134,6 +134,13 @@ public class BehaviorLevel : MonoBehaviour {
 
 	    if (Input.GetMouseButtonDown(0) || refresh)
 	    {
+			//Added by Konstantin
+			//if gui is hit then ignore the world
+			if(GUIUtility.hotControl>0){
+				return;
+			}
+			//
+
 	        Vector2 mouseWorldPos = MainCamera.ScreenToWorldPoint(new Vector2(Input.mousePosition.x, Input.mousePosition.y));
             IntVector2 clickTilePosition = Statics.PosToTile(mouseWorldPos.x + Statics.TileSize / 100f / 2f, mouseWorldPos.y + Statics.TileSize / 100f / 2f);
 
@@ -187,6 +194,9 @@ public class BehaviorLevel : MonoBehaviour {
                         }
                     }
                     actionQ.AddAction(_activePlayer, _useItem, toGo);
+					//Added by Konstantin
+					MainCamera.GetComponent<GUIControl>().useActionFromWorld();
+					//
                 }
 
                 //if we click on the player
@@ -218,6 +228,10 @@ public class BehaviorLevel : MonoBehaviour {
                     activePlayerScript.ActionPoints -= 1;
                     //ToDo: Tell inventory that item has been dropped
                     Debug.Log(_activePlayer.name + " dropped " + _dropItem.name);
+
+					//Added by Konstantin
+					MainCamera.GetComponent<GUIControl>().dropActionFromWorld();
+					//
 
                     _dropItem = null;
                     DrawMovement(activePlayerScript.FinalPosition, activePlayerScript.ActionPoints, activePlayerScript.LastAction);

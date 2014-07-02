@@ -229,7 +229,7 @@ public class PlayerActions : MonoBehaviour
 	    _level = GameObject.Find("/Level");
         _availableItems = _level.GetComponent<AvailableItems>()._items;
         _ghosts = new List<GameObject>();
-        _items = new List<GameObject>();
+		//_items = new List<GameObject>(); will be filled from the inspector with prefabs; only Level2.unity
         _ghostItem = null;
 	    LastAction = false;
 

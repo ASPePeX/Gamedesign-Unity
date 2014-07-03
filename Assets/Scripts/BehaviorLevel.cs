@@ -40,6 +40,17 @@ public class BehaviorLevel : MonoBehaviour {
 
     private bool refresh;
 
+	//Added by Konstantin
+	public GameObject DropItem 
+	{
+		set { _dropItem = value; }
+	}
+	public GameObject UseItem 
+	{
+		set { _useItem = value; }
+	}
+	//
+
     public GameObject[] Players
     {
         get { return _players; }
@@ -164,8 +175,8 @@ public class BehaviorLevel : MonoBehaviour {
 	        {
                 Debug.Log(CheckIfPlayerOnTile(clickTilePosition));
 	            PlayerActions activePlayerScript = (PlayerActions) _activePlayer.GetComponent(typeof (PlayerActions));
-
-                //if the gui sent us an item to drop
+                
+				//if the gui sent us an item to drop
                 if (_dropItem != null && refresh && activePlayerScript.ActionPoints > 0)
                 {
                     DrawDropArea(activePlayerScript.FinalPosition, activePlayerScript.ActionPoints);

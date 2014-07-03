@@ -18,7 +18,7 @@ public class GUIControl : MonoBehaviour
 		new Rect (350, 200, 20, 20)
 	};
 	private const int CLOSE_SIZE = 20;
-	private int sizePlayerButtons = 50;
+	private const int SIZE_PLAYER_BUTTONS = 50;
 	private int activePlayer = 10;
 	private bool[] activeGUIPlayer = {false,false,false,false};
 	private bool[] playerRoundEnd = {false,false,false,false};
@@ -38,9 +38,9 @@ public class GUIControl : MonoBehaviour
 	private int[] primaryProtection = {5,5,5,5};
 	private int[] inventoryPreSelected = {0,0,0,0};//in item properties speichern
 	private bool attack = false;
-	private int infectedDamage = 0;
-	private int infectionDamage = 25;
-	private float infectedTimer = 0.0f;
+	private int[] infectedDamage = {0,0,0,0};
+	private int infectionDamage = 25; //von gegner holen
+	private float[] infectedTimer = {0.0f,0.0f,0.0f,0.0f};
 	private Texture2D whiteTex;
 
 	public Texture2D rifle;
@@ -63,14 +63,11 @@ public class GUIControl : MonoBehaviour
 	private Texture2D framePrimary;
 	private Texture2D frameSelected;
 	private Texture2D frameProtection;
-	/*
-	 * 
-	 * wenn neue runde, dann variablen zuruecksetzen
-	 * 
-	 */
 	private GameObject[] players;
 	private PlayerActions[] playerReferences;
 	private BehaviorLevel levelReference;
+	private GameObject[] items;
+
 	void Start(){
 		inventory = new int[4][];
 
@@ -102,7 +99,7 @@ public class GUIControl : MonoBehaviour
 
 	void getItemTextures(){
 		//get items and the properties and save them in arrays
-		GameObject[] items = GameObject.Find ("Level").GetComponent<AvailableItems>()._items;
+		items = GameObject.Find ("Level").GetComponent<AvailableItems>()._items;
 		Texture2D[] itemIcons = new Texture2D[items.Length];
 		string[] itemType = new string[items.Length];
 		itemNames = new string[items.Length];
@@ -243,16 +240,16 @@ public class GUIControl : MonoBehaviour
 
 		GUI.skin = skinPlayerToggle;
 		//player corner buttons
-		Rect[] playerRects = {new Rect (0, Screen.height - sizePlayerButtons, sizePlayerButtons, sizePlayerButtons),
-					new Rect (0, 0, sizePlayerButtons, sizePlayerButtons),
-					new Rect (Screen.width - sizePlayerButtons, 0, sizePlayerButtons, sizePlayerButtons),
-					new Rect (Screen.width - sizePlayerButtons, Screen.height - sizePlayerButtons, sizePlayerButtons, sizePlayerButtons)
+		Rect[] playerRects = {new Rect (0, Screen.height - SIZE_PLAYER_BUTTONS, SIZE_PLAYER_BUTTONS, SIZE_PLAYER_BUTTONS),
+					new Rect (0, 0, SIZE_PLAYER_BUTTONS, SIZE_PLAYER_BUTTONS),
+					new Rect (Screen.width - SIZE_PLAYER_BUTTONS, 0, SIZE_PLAYER_BUTTONS, SIZE_PLAYER_BUTTONS),
+					new Rect (Screen.width - SIZE_PLAYER_BUTTONS, Screen.height - SIZE_PLAYER_BUTTONS, SIZE_PLAYER_BUTTONS, SIZE_PLAYER_BUTTONS)
 				};
 		Vector2[] pivotPoints = {
-			new Vector2 (25, Screen.height - sizePlayerButtons / 2),
+			new Vector2 (25, Screen.height - SIZE_PLAYER_BUTTONS / 2),
 			new Vector2 (25, 25),
-			new Vector2 (Screen.width - sizePlayerButtons / 2, 25),
-			new Vector2 (Screen.width - sizePlayerButtons / 2, Screen.height - sizePlayerButtons / 2)
+			new Vector2 (Screen.width - SIZE_PLAYER_BUTTONS / 2, 25),
+			new Vector2 (Screen.width - SIZE_PLAYER_BUTTONS / 2, Screen.height - SIZE_PLAYER_BUTTONS / 2)
 		};
 			
 		for (int i = 0; i<playerRects.Length; i++) {
@@ -286,7 +283,7 @@ public class GUIControl : MonoBehaviour
 		//HP Fill color
 		Color fillColor;
 		if (infectedPlayer [windowID]) {
-			float currentHPDamage = ((float)infectedDamage)/((float)hpWidth/100.0f);
+			float currentHPDamage = ((float)infectedDamage[windowID])/((float)hpWidth/100.0f);
 			float hpDamage = hpPlayer[windowID]/100.0f - ((float)currentHPDamage/100.0f);
 			if(hpDamage<0){
 				hpDamage=0.0f;
@@ -299,15 +296,15 @@ public class GUIControl : MonoBehaviour
 		Texture2D fillTex = createBlankTexture (fillColor);
 		GUI.DrawTexture (new Rect(hpPos.x,hpPos.y,hpWidth * (hpPlayer[windowID]/100.0f),hpHeight),fillTex);
 		if (infectedPlayer [windowID]) {
-			infectedTimer += Time.deltaTime;
-			if(infectedTimer>0.2f){
-				infectedDamage++;
-				infectedTimer = 0.0f;
+			infectedTimer[windowID] += Time.deltaTime;
+			if(infectedTimer[windowID]>0.2f){
+				infectedDamage[windowID]++;
+				infectedTimer[windowID] = 0.0f;
 			}
-			GUI.DrawTexture (new Rect((hpPos.x+hpWidth * (hpPlayer[windowID]/100.0f))-infectedDamage,hpPos.y,infectedDamage,hpHeight),whiteTex);
+			GUI.DrawTexture (new Rect((hpPos.x+hpWidth * (hpPlayer[windowID]/100.0f))-infectedDamage[windowID],hpPos.y,infectedDamage[windowID],hpHeight),whiteTex);
 			float stopValue = ((float)hpWidth/100.0f)*(float)infectionDamage;
-			if(infectedDamage==Mathf.Round(stopValue)){
-				infectedDamage=0;
+			if(infectedDamage[windowID]==Mathf.Round(stopValue)){
+				infectedDamage[windowID]=0;
 			}
 		}
 		//HP Grid
@@ -379,6 +376,10 @@ public class GUIControl : MonoBehaviour
 					inventoryActive = -1;
 					Array.Clear(actionButtonsActive,0,actionButtonsActive.Length);
 					attack = false;
+					//stop actions in world
+					levelReference.DropItem = null;
+					levelReference.UseItem = null;
+					levelReference.DrawMovement(playerReferences[windowID].FinalPosition,playerReferences[i].ActionPoints,playerReferences[i].LastAction);
 				}
 			} else {
 				int index = inventory [windowID][i] - 1;
@@ -388,13 +389,11 @@ public class GUIControl : MonoBehaviour
 					if(inventoryUsed[windowID,i]){
 						//dropped item click-->player gets the item back
 						inventoryUsed[windowID,i] = false;
-						Debug.Log("Item has been grabbed again");
-						/* 
-						 * Notice world that item has been grabbed again ToDo
-						 */
+						Debug.Log("Item has been grabbed again->Remove from ActionQueue");
+						int ind = inventory [windowID][i]-1;
+						levelReference.gameObject.GetComponent<ActionQueue>().RemoveAction(playerReferences[windowID].gameObject,items[ind]);
 					} else {
 						//valid item click
-
 						if(itemTypes[inventory[windowID][i]-1]=="weapon"){
 							primaryWeapon[windowID] = i;
 							playerReferences [windowID].PrimaryWeapon = i;
@@ -404,6 +403,10 @@ public class GUIControl : MonoBehaviour
 						Array.Clear(actionButtonsActive,0,actionButtonsActive.Length);
 						if(inventoryActive==i){
 							inventoryActive = -1;
+							Debug.Log("display stopped");
+							levelReference.DropItem = null;
+							levelReference.UseItem = null;
+							levelReference.DrawMovement(playerReferences[windowID].FinalPosition,playerReferences[i].ActionPoints,playerReferences[i].LastAction);
 						} else {
 							inventoryActive = i;
 							actionButtonsActive[inventoryPreSelected[index]] = true;
@@ -411,9 +414,6 @@ public class GUIControl : MonoBehaviour
 								levelReference.StartDropItem(itemNames[index]);
 							}
 						}
-						/*bool origin = inventoryActive[i];
-						Array.Clear(inventoryActive,0,inventoryActive.Length);
-						inventoryActive[i] = !origin;*/
 						attack = false;
 
 						if(itemTypes[inventory[windowID][i]-1]=="protection"){
@@ -433,6 +433,7 @@ public class GUIControl : MonoBehaviour
 			}
 
 		}
+
 		//make window draggable over the whole size
 		GUI.DragWindow (new Rect (0, 0, 128, 64));
 		GUI.skin = null;
@@ -507,6 +508,18 @@ public class GUIControl : MonoBehaviour
 
 	public void roundEnd(){
 		//variable zurücksetzen
+		activePlayer = 10;
+		Array.Clear (activeGUIPlayer,0,activeGUIPlayer.Length);
+		inventoryActive = -1;
+		for (int i=0; i<4; i++) {
+			for(int j=0;j<4;j++){
+				inventoryUsed[i,j] = false;
+			}
+		}
+		Array.Clear (hasGhostItem,0,hasGhostItem.Length);
+		for (int i=0; i<ghostNumber.Length; i++) {
+			ghostNumber[i] = 5;
+		}
 	}
 
 	private void walkStepFromActivePlayer(int apLoss){

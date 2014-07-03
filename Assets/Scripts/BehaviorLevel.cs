@@ -171,8 +171,8 @@ public class BehaviorLevel : MonoBehaviour {
                     DrawDropArea(activePlayerScript.FinalPosition, activePlayerScript.ActionPoints);
                 }
 
-                //if the gui sent us an item to drop
-                else if (_useItem != null && refresh && activePlayerScript.ActionPoints > 0)
+                //if the gui sent us an item to use
+                else if (_useItem != null && refresh && activePlayerScript.ActionPoints > 0 && !CheckIfPlayerOnTile(clickTilePosition) && !CheckIfPlayerGhostOnTile(clickTilePosition) && !CheckIfItemGhostOnTile(clickTilePosition))
                 {
                     DrawDropArea(activePlayerScript.FinalPosition, activePlayerScript.ActionPoints);
                     Debug.Log("Drawing use");
@@ -193,10 +193,13 @@ public class BehaviorLevel : MonoBehaviour {
                             break;
                         }
                     }
-                    actionQ.AddAction(_activePlayer, _useItem, toGo);
-					//Added by Konstantin
-					MainCamera.GetComponent<GUIControl>().useActionFromWorld();
-					//
+                    if (toGo != null)
+                    {
+                        actionQ.AddAction(_activePlayer, _useItem, toGo);
+                        //Added by Konstantin
+                        MainCamera.GetComponent<GUIControl>().useActionFromWorld();
+                        //
+                    }
                 }
 
                 //if we click on the player

@@ -27,11 +27,21 @@ public class ActionQueue : MonoBehaviour
         Debug.Log("Added Action to Queue!");
     }
 
-    public void RemoveAction(GameObject player)
+    public void RemoveAllPlayerAction(GameObject player)
     {
         foreach (ActionEntry ae in _actions)
         {
             if (ae.GoFrom.Equals(player))
+            {
+                _actions.Remove(ae);
+            }
+        }
+    }
+    public void RemoveAction(GameObject player, GameObject item)
+    {
+        foreach (ActionEntry ae in _actions)
+        {
+            if (ae.GoFrom.Equals(player) && ae.Item.Equals(item))
             {
                 _actions.Remove(ae);
             }

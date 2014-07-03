@@ -1569,7 +1569,9 @@ MonoBehaviour:
   - {fileID: 2800000, guid: caa46de79f70284489e38134eead60e5, type: 3}
   - {fileID: 2800000, guid: 2ca93c43fad0c4b4f8a7623a35d6cbd2, type: 3}
   - {fileID: 2800000, guid: d768c58b48b91ad4ebe3608b45f10321, type: 3}
-  attackButtons: []
+  attackButtons:
+  - {fileID: 2800000, guid: d33656fe20d35ad4485afdeba2d92429, type: 3}
+  - {fileID: 2800000, guid: 5c8ca33d6f9dd5c4e9d0810e31ba9cc2, type: 3}
   hpRaster: {fileID: 2800000, guid: 2a10aa35dd836ed4995d03046b98a364, type: 3}
   apRaster: {fileID: 2800000, guid: 80769b5ec59a80e499a225b00ce7aaa0, type: 3}
   closeButtons:

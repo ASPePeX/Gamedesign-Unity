@@ -68,6 +68,12 @@ public class GUIControl : MonoBehaviour
 	private BehaviorLevel levelReference;
 	private GameObject[] items;
 
+	/*
+	 * Item ablegen zuruecknehmen
+	 * 
+	 * item types aus itemproperties auslesen on the fly
+	 */
+
 	void Start(){
 		inventory = new int[4][];
 
@@ -183,23 +189,10 @@ public class GUIControl : MonoBehaviour
 		}
 
 
-
-		/* START Simulation der Welt */
-		if(GUI.Button(new Rect(100,0,100,50),"Ablegen") && actionButtonsActive[0]){
-			//item is dropped
-			inventoryUsed[activePlayer,inventoryActive] = true;
-			inventoryActive = -1;
-			Array.Clear(actionButtonsActive,0,actionButtonsActive.Length);
-		}
-		if (GUI.Button (new Rect (200, 0, 100, 50), "Angreifen") && actionButtonsActive [1] &&  itemTypes[inventory[activePlayer][inventoryActive]-1] == "weapon") {
-			attack = true;
-		}
-		/* END Simulation der Welt */
-
 		for (int i = 0; i<windowRect.Length; i++) {
 
 
-			Vector2 startPos = new Vector2(playerReferences[i].StartPosition.x * 32,playerReferences[i].StartPosition.y*32);//Pfusch
+			Vector2 startPos = new Vector2(playerReferences[i].FinalPosition.x * 32,playerReferences[i].FinalPosition.y*32);//Pfusch
 			if (activeGUIPlayer [i]) {
 				int angle = 0;
 				if(i>0&&i<3){
@@ -353,6 +346,11 @@ public class GUIControl : MonoBehaviour
 						if(secondAction==benutzen){
 							int id = inventory[windowID][inventoryActive];
 							levelReference.StartUseItem(itemNames[id-1]);
+							//if item is weapon then display + - buttons
+							if(items[inventory[windowID][inventoryActive]].GetComponent<ItemProperties>().isWeapon){
+								attack = true;
+							}
+
 						}
 					}
 				}
@@ -383,7 +381,6 @@ public class GUIControl : MonoBehaviour
 				}
 			} else {
 				int index = inventory [windowID][i] - 1;
-				int active = (inventoryActive==i) ? 1 : 0;
 
 				if(GUI.Button (new Rect (32 * i, 32, 32, 32), inventoryIcons [index]) && windowID==activePlayer && ghostNumber[windowID]!=i){
 					if(inventoryUsed[windowID,i]){

@@ -29,22 +29,37 @@ public class ActionQueue : MonoBehaviour
 
     public void RemoveAllPlayerAction(GameObject player)
     {
+        List<ActionEntry> _delList = new List<ActionEntry>();
+
         foreach (ActionEntry ae in _actions)
         {
             if (ae.GoFrom.Equals(player))
             {
-                _actions.Remove(ae);
+                _delList.Add(ae);
             }
         }
+
+        foreach (ActionEntry ae in _delList)
+        {
+            _actions.Remove(ae);
+        }
     }
+
     public void RemoveAction(GameObject player, GameObject item)
     {
+        List<ActionEntry> _delList = new List<ActionEntry>();
+
         foreach (ActionEntry ae in _actions)
         {
             if (ae.GoFrom.Equals(player) && ae.Item.Equals(item))
             {
-                _actions.Remove(ae);
+                _delList.Add(ae);
             }
+        }
+
+        foreach (ActionEntry ae in _delList)
+        {
+            _actions.Remove(ae);
         }
     }
 

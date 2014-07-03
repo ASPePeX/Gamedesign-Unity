@@ -403,7 +403,7 @@ public class BehaviorLevel : MonoBehaviour {
         {
             //next round
             BroadcastMessage("MessageHandler", "NewRound");
-
+			MainCamera.GetComponent<GUIControl>().roundEnd();
             //ToDo: Call Action Queue to handle interactions
             actionQ.EvaluateActions();
 

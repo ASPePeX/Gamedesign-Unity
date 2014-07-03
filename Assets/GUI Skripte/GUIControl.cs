@@ -82,11 +82,6 @@ public class GUIControl : MonoBehaviour
 
 
 
-		/*inventoryIcons =  new Texture2D[4];
-		inventoryIcons [0] = rifle;
-		inventoryIcons [1] = baseball;
-		inventoryIcons [2] = medipack;
-		inventoryIcons [3] = schutzweste;*/
 		levelReference = GameObject.Find ("Level").GetComponent<BehaviorLevel> ();
 
 		Transform playerContainer = GameObject.Find ("Players").transform;
@@ -140,35 +135,8 @@ public class GUIControl : MonoBehaviour
 		return tex;
 	}
 
-	String returnSelectedGUIActions(){
-		//call from world
-		return "";
-	}
-
-
 	void OnGUI ()
 	{
-
-		if (Input.GetMouseButtonDown (0)) {
-			Vector2 mousePos = new Vector2 (Input.mousePosition.x, Input.mousePosition.y);
-			//Debug.Log(mousePos);
-
-			Debug.Log(GUIUtility.hotControl);
-
-			/*Rect[] mergeArr = new Rect[windowRect.Length+windowCloseRect.Length];
-			Array.Copy(windowRect,mergeArr,windowRect.Length);
-			Array.Copy(windowCloseRect,0,mergeArr,windowRect.Length,windowCloseRect.Length);
-			for(int i=0;i<mergeArr.Length;i++){
-				Debug.Log(mousePos);
-				Debug.Log(mergeArr[i].x+" "+mergeArr[i].y);
-				if(mousePos.x>mergeArr[i].x && mousePos.x<(mergeArr[i].x+mergeArr[i].width) && mousePos.y>mergeArr[i].y && mousePos.y<(mergeArr[i].y+mergeArr[i].height)){
-					Debug.Log("TREFFER");
-					break;
-				}
-			}*/
-
-			   //windowCloseRect
-		}
 
 		//Poll player data
 		bool someoneActive = false;
@@ -199,14 +167,7 @@ public class GUIControl : MonoBehaviour
 				for(int j=0;j<itemNames.Length;j++){
 					Debug.Log(itemNames[j]);
 					if(itemNames[j]==playerReferences[i].GhostItem.name){
-						//for(int m=0;m<inventory[i]
 						int index = Array.IndexOf(inventory[i],0);
-						/*for(int k=0;k<inventory[i].Length;k++){
-							if(inventory[i][k]==0){
-								index = k;
-								break;
-							}
-						}*/
 						inventory[i][index] = j+1;
 						Debug.Log("index");
 						Debug.Log(j+1);
@@ -542,6 +503,10 @@ public class GUIControl : MonoBehaviour
 			inventoryActive = -1;
 			Array.Clear(actionButtonsActive,0,actionButtonsActive.Length);
 		}
+	}
+
+	public void roundEnd(){
+		//variable zurücksetzen
 	}
 
 	private void walkStepFromActivePlayer(int apLoss){

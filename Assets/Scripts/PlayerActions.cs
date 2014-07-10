@@ -115,9 +115,9 @@ public class PlayerActions : MonoBehaviour
     {
         Vector2 posXY = Statics.TileToPos(instantiatePosition.x, instantiatePosition.y);
 
-        var newGhost = Instantiate(PlayerGhost, new Vector3(posXY.x, posXY.y, 0), Quaternion.identity) as GameObject;
+        var newGhost = Instantiate(this.PlayerGhost, new Vector3(posXY.x, posXY.y, 0), Quaternion.identity) as GameObject;
         newGhost.transform.parent = this.transform;
-        newGhost.GetComponent<SpriteRenderer>().color = playerColor;
+        //newGhost.GetComponent<SpriteRenderer>().color = playerColor;
         _ghosts.Add(newGhost);
     }
 

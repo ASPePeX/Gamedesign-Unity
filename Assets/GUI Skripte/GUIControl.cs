@@ -96,6 +96,8 @@ public class GUIControl : MonoBehaviour
 			playerReferences[i] = players[i].GetComponent<PlayerActions>();
 			apPlayer[i] = Statics.ActionPoints;
 			hpPlayer[i] = Statics.HealthPoints;
+
+			inventory[i] = new int[] {0,0,0,0};
 		}
 		getItemTextures ();
 		/*primaryWeapon [0] = 0;
@@ -166,15 +168,16 @@ public class GUIControl : MonoBehaviour
 			}
 
 			//if player has picked an item
-			if(playerReferences[i].GhostItem!=null && !hasGhostItem[i]){
+			if(playerReferences[i].GhostItem!=null/* && !hasGhostItem[i]*/){
 				for(int j=0;j<itemNames.Length;j++){
-					Debug.Log(itemNames[j]);
+					//Debug.Log(itemNames[j]);
 					if(itemNames[j]==playerReferences[i].GhostItem.name){
 						int index = Array.IndexOf(inventory[i],0);
+						//Debug.Log(index);
 						inventory[i][index] = j+1;
-						Debug.Log("index");
-						Debug.Log(j+1);
-						Debug.Log(i);
+						//Debug.Log("index");
+						//Debug.Log(j+1);
+						//Debug.Log(i);
 						hasGhostItem[i]=true;
 						ghostNumber[i] = index;
 						break;
@@ -381,7 +384,6 @@ public class GUIControl : MonoBehaviour
 				}
 			} else {
 				int index = inventory [windowID][i] - 1;
-
 				if(GUI.Button (new Rect (32 * i, 32, 32, 32), inventoryIcons [index]) && windowID==activePlayer && ghostNumber[windowID]!=i){
 					if(inventoryUsed[windowID,i]){
 						//dropped item click-->player gets the item back

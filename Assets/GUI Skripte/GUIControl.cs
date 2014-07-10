@@ -23,7 +23,7 @@ public class GUIControl : MonoBehaviour
 	private bool[] activeGUIPlayer = {false,false,false,false};
 	private bool[] playerRoundEnd = {false,false,false,false};
 	private int[] hpPlayer = new int[4];
-	private bool[] infectedPlayer = {true,false,false,false};
+	private bool[] infectedPlayer = {false,false,false,false};
 	private int[] apPlayer = {7,5,7,7};
 	private int[][] inventory; //= {{1,2,0,0},{1,2,0,0},{1,2,0,0},{1,2,0,0}};
 	private int inventoryActive = -1;
@@ -392,10 +392,11 @@ public class GUIControl : MonoBehaviour
 					} else {
 						//valid item click
 						if(itemTypes[inventory[windowID][i]-1]=="weapon"){
+							//say to player that main weapon has changed
 							primaryWeapon[windowID] = i;
 							playerReferences [windowID].PrimaryWeapon = i;
+							playerReferences [windowID].ActiveItem = i;
 							Debug.Log("Main Weapon Change");
-							//say to player that main weapon has changed
 						}
 						Array.Clear(actionButtonsActive,0,actionButtonsActive.Length);
 						if(inventoryActive==i){
@@ -405,6 +406,7 @@ public class GUIControl : MonoBehaviour
 							levelReference.UseItem = null;
 							levelReference.DrawMovement(playerReferences[windowID].FinalPosition,playerReferences[i].ActionPoints,playerReferences[i].LastAction);
 						} else {
+							playerReferences [windowID].ActiveItem = i;
 							inventoryActive = i;
 							actionButtonsActive[inventoryPreSelected[index]] = true;
 							if(inventoryPreSelected[index]==0){

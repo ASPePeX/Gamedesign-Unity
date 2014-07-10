@@ -159,11 +159,11 @@ public class GUIControl : MonoBehaviour
 			hpPlayer[i] = playerReferences[i].HealthPoints;
 			primaryWeapon[i] = playerReferences[i].PrimaryWeapon;
 
-			List<GameObject> items = playerReferences[i].Items;
+			List<GameObject> itemsPlayer = playerReferences[i].Items;
 			inventory[i] = new int[] {0,0,0,0};
-			for(int m=0;m<items.Count;m++){
-				if(m<4){
-					inventory[i][m] = Array.IndexOf(itemNames,items[m].name)+1;
+			for(int m=0;m<itemsPlayer.Count;m++){
+				if(m<4 && itemsPlayer[m]!=null){
+					inventory[i][m] = Array.IndexOf(itemNames,itemsPlayer[m].name)+1;
 				}
 			}
 
@@ -508,6 +508,7 @@ public class GUIControl : MonoBehaviour
 	}
 
 	public void roundEnd(){
+		Debug.Log ("GUI Round End");
 		//variable zurücksetzen
 		activePlayer = 10;
 		Array.Clear (activeGUIPlayer,0,activeGUIPlayer.Length);

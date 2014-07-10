@@ -38,10 +38,12 @@ public class ActionQueue : MonoBehaviour
                 _delList.Add(ae);
             }
         }
-
-        foreach (ActionEntry ae in _delList)
+        if (_delList.Count > 0)
         {
-            _actions.Remove(ae);
+            foreach (ActionEntry ae in _delList)
+            {
+                _actions.Remove(ae);
+            }
         }
     }
 
@@ -56,10 +58,12 @@ public class ActionQueue : MonoBehaviour
                 _delList.Add(ae);
             }
         }
-
-        foreach (ActionEntry ae in _delList)
+        if (_delList.Count > 0)
         {
-            _actions.Remove(ae);
+            foreach (ActionEntry ae in _delList)
+            {
+                _actions.Remove(ae);
+            }
         }
     }
 
@@ -94,6 +98,7 @@ public class ActionQueue : MonoBehaviour
             {
                 if (ae.GoFrom.CompareTag("Player") && ae.GoTo.CompareTag("Enemy"))
                 {
+                    Debug.Log("Kill it with fire!");
                     ae.GoTo.GetComponent<EnemyAction>().HealthPoints -= ItemScript.damageAmount;
 
                     if (ItemScript.isSecondaryWeapon)
@@ -116,6 +121,10 @@ public class ActionQueue : MonoBehaviour
                     }
                 }
             }
+        }
+        else
+        {
+            Debug.Log("Action failed, target out of range");
         }
     }
 }

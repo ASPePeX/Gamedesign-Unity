@@ -121,10 +121,28 @@ public static class Statics
 
     public static int MovingToTileCost(GameObject go1, GameObject go2)
     {
-        PlayerActions script1 = (PlayerActions)go1.GetComponent(typeof(PlayerActions));
-        PlayerActions script2 = (PlayerActions)go2.GetComponent(typeof(PlayerActions));
+        IntVector2 pos1 = new IntVector2();
+        IntVector2 pos2 = new IntVector2();
 
-        return MovingToTileCost(script1.FinalPosition, script2.FinalPosition);
+        //Todo: Error handling in case of unsupported gameObjects
+        if (go1.tag == "Player")
+        {
+            pos1 = go1.GetComponent<PlayerActions>().FinalPosition;
+        }
+        else if (go1.tag == "Enemy")
+        {
+            pos1 = PosToTile(go1.transform.position);
+        }
+        if (go2.tag == "Player")
+        {
+            pos2 = go2.GetComponent<PlayerActions>().FinalPosition;
+        }
+        else if (go2.tag == "Enemy")
+        {
+            pos2 = PosToTile(go2.transform.position);
+        }
+
+        return MovingToTileCost(pos1, pos2);
     }
 
     public static int MovingToTileCost(IntVector2 tileTargetPosition, GameObject player)

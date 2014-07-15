@@ -88,7 +88,31 @@ public class ActionQueue : MonoBehaviour
         }
         else
         {
-            Debug.Log("No player (last) player action found");
+            Debug.Log("No (last) player action found");
+        }
+    }
+    public void RemoveLastAction(GameObject player, GameObject item)
+    {
+        ActionEntry lastAction = new ActionEntry();
+        bool found = false;
+
+        foreach (ActionEntry ae in _actions)
+        {
+            if (ae.GoFrom.Equals(player) && ae.Item.Equals(item))
+            {
+                lastAction = ae;
+                found = true;
+            }
+        }
+
+        if (found)
+        {
+            _actions.Remove(lastAction);
+            Debug.Log("Last player+item action removed");
+        }
+        else
+        {
+            Debug.Log("No (last) player+item action found");
         }
     }
 

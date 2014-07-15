@@ -100,7 +100,12 @@ public static class Statics
     {
         return PosToTile(pos.x, pos.y);
     }
-    
+
+    public static IntVector2 PosToTile(GameObject go)
+    {
+        return PosToTile(go.transform.position.x, go.transform.position.y);
+    }
+
     public static IntVector2 PosToTile(float posX, float posY)
     {
         return PosToTile(new Vector2(posX, posY));

@@ -30,7 +30,6 @@ public class GUIControl : MonoBehaviour
 	private bool[,] inventoryUsed = {{false,false,false,false},{false,false,false,false},{false,false,false,false},{false,false,false,false}};
 	private bool[] actionButtonsActive = {false,false};
 	private Texture2D[] inventoryIcons;
-	private string[] itemTypes = {"weapon","weapon","medi","protection"};
 	private string[] itemNames;
 	private bool[] hasGhostItem = {false,false,false,false};
 	private int[] ghostNumber = {5,5,5,5};
@@ -110,28 +109,14 @@ public class GUIControl : MonoBehaviour
 		//get items and the properties and save them in arrays
 		items = GameObject.Find ("Level").GetComponent<AvailableItems>()._items;
 		Texture2D[] itemIcons = new Texture2D[items.Length];
-		string[] itemType = new string[items.Length];
 		itemNames = new string[items.Length];
 		for (int i=0; i<items.Length; i++) {
 			itemNames[i] = items[i].name;
 			itemIcons[i] = getTexFromGameObject(items[i]);
-			ItemProperties properties = items[i].GetComponent<ItemProperties>();
-			if(properties.isWeapon){
-				itemType[i] = "weapon";
-			} else if(properties.canHeal && properties.doesDesinfect){
-				itemType[i] = "dualpack";
-			} else if(properties.canHeal){
-				itemType[i] = "medi";
-			} else if(properties.doesDesinfect){
-				itemType[i] = "desinfection";
-			} else if(properties.isArmor){
-				itemType[i] = "protection";
-			}
 		}
 		//noch haesslich, spaeter komplett hier erstellen
 		inventoryIcons =  new Texture2D[itemIcons.Length];
 		inventoryIcons = itemIcons;
-		itemTypes = itemType;
 	}
 
 	Texture2D getTexFromGameObject(GameObject obj){
@@ -348,7 +333,7 @@ public class GUIControl : MonoBehaviour
 					}
 				}
 			}
-			if(inventoryActive!=-1&&itemTypes[inventory[windowID][inventoryActive]-1]!="protection"){
+			if(inventoryActive!=-1 && !items[inventory[windowID][inventoryActive]-1].GetComponent<ItemProperties>().isArmor){
 				Texture secondAction = (attack) ? attackButtons[1] : benutzen;
 				if (GUI.Button (new Rect (96, 0, 32, 32), secondAction)) {
 					if(attack){
@@ -361,17 +346,19 @@ public class GUIControl : MonoBehaviour
 
 						if(attack){//nicht optimal
 							//notice world that attack number has increased
-							levelReference.gameObject.GetComponent<ActionQueue>().AddAction(addAttack[0],addAttack[1],addAttack[2]);
-							Debug.Log("notice world that attack number has increased");
-						}
-						if(secondAction==benutzen){
-							int id = inventory[windowID][inventoryActive];
-							levelReference.StartUseItem(itemNames[id-1]);
-							//if item is weapon then display + - buttons
-							if(items[inventory[windowID][inventoryActive]].GetComponent<ItemProperties>().isWeapon){
-								attack = true;
+							if(players[windowID].GetComponent<PlayerActions>().ActionPoints - levelReference.gameObject.GetComponent<ActionQueue>().SpentActionPointsForPlayer(players[windowID]) >= players[windowID].GetComponent<PlayerActions>().Items[players[windowID].GetComponent<PlayerActions>().ActiveItem].GetComponent<ItemProperties>().UsageCostInActionpoints){
+								Debug.Log("new attack");
+								levelReference.gameObject.GetComponent<ActionQueue>().AddAction(addAttack[0],addAttack[1],addAttack[2]);
 							}
-
+						}
+						int id = inventory[windowID][inventoryActive];
+						if(secondAction==benutzen && !items[id-1].GetComponent<ItemProperties>().isWeapon){
+							Debug.Log("vor start use item");
+							levelReference.StartUseItem(itemNames[id-1]);
+						} else if(items[id-1].GetComponent<ItemProperties>().isWeapon){
+							levelReference.DrawMovement(playerReferences[windowID].FinalPosition,playerReferences[windowID].ActionPoints,playerReferences[windowID].LastAction);
+							levelReference.UseItem = null;
+							levelReference.DropItem = null;
 						}
 					}
 				}
@@ -396,9 +383,9 @@ public class GUIControl : MonoBehaviour
 					Array.Clear(actionButtonsActive,0,actionButtonsActive.Length);
 					attack = false;
 					//stop actions in world
+					levelReference.DrawMovement(playerReferences[windowID].FinalPosition,playerReferences[windowID].ActionPoints,playerReferences[windowID].LastAction);
 					levelReference.DropItem = null;
 					levelReference.UseItem = null;
-					levelReference.DrawMovement(playerReferences[windowID].FinalPosition,playerReferences[i].ActionPoints,playerReferences[i].LastAction);
 				}
 			} else {
 				int index = inventory [windowID][i] - 1;
@@ -408,10 +395,10 @@ public class GUIControl : MonoBehaviour
 						inventoryUsed[windowID,i] = false;
 						Debug.Log("Item has been grabbed again->Remove from ActionQueue");
 						int ind = inventory [windowID][i]-1;
-						levelReference.gameObject.GetComponent<ActionQueue>().RemoveAction(playerReferences[windowID].gameObject,items[ind]);
+						levelReference.gameObject.GetComponent<ActionQueue>().RemoveAction(players[windowID],items[ind]);
 					} else {
 						//valid item click
-						if(itemTypes[inventory[windowID][i]-1]=="weapon"){
+						if(items[inventory[windowID][i]-1].GetComponent<ItemProperties>().isWeapon){
 							//say to player that main weapon has changed
 							primaryWeapon[windowID] = i;
 							playerReferences [windowID].PrimaryWeapon = i;
@@ -424,18 +411,26 @@ public class GUIControl : MonoBehaviour
 							Debug.Log("display stopped");
 							levelReference.DropItem = null;
 							levelReference.UseItem = null;
-							levelReference.DrawMovement(playerReferences[windowID].FinalPosition,playerReferences[i].ActionPoints,playerReferences[i].LastAction);
+							levelReference.DrawMovement(playerReferences[windowID].FinalPosition,playerReferences[windowID].ActionPoints,playerReferences[windowID].LastAction);
 						} else {
 							playerReferences [windowID].ActiveItem = i;
 							inventoryActive = i;
 							actionButtonsActive[inventoryPreSelected[index]] = true;
 							if(inventoryPreSelected[index]==0){
 								levelReference.StartDropItem(itemNames[index]);
+							} else if(inventoryPreSelected[index]==1){
+								if(!items[inventory[windowID][i]-1].GetComponent<ItemProperties>().isWeapon){
+									levelReference.StartUseItem(itemNames[index]);
+								} else {
+									levelReference.DropItem = null;
+									levelReference.UseItem = null;
+									levelReference.DrawMovement(playerReferences[windowID].FinalPosition,playerReferences[windowID].ActionPoints,playerReferences[windowID].LastAction);
+								}
 							}
 						}
 						attack = false;
 
-						if(itemTypes[inventory[windowID][i]-1]=="protection"){
+						if(items[inventory[windowID][i]-1].GetComponent<ItemProperties>().isArmor){
 							primaryProtection[windowID] = i;
 						}
 					}
@@ -550,18 +545,6 @@ public class GUIControl : MonoBehaviour
 		addAttack [2] = to;
 
 		inventoryActive = primaryWeapon [activePlayer];
-	}
-
-	private void walkStepFromActivePlayer(int apLoss){
-		apPlayer[activePlayer] -= apLoss;
-		if (apPlayer [activePlayer]<0) {
-			//walk action fail-->notice world
-		}
-	}
-
-	private void setNewActivePlayer(int newPlayer){
-		//davor noch überprüfen ob aktuell aktiver spieler schon durch ist
-		activePlayer = newPlayer;
 	}
 
 }

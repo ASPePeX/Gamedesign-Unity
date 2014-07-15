@@ -323,11 +323,16 @@ public class GUIControl : MonoBehaviour
 		if(inventoryActive!=-1 && activePlayer==windowID){
 			Texture firstAction = (attack) ? attackButtons[0] : ablegen;
 			if (GUI.Button (new Rect (64, 0, 32, 32), firstAction)) {
-				actionButtonsActive[0] = !actionButtonsActive[0];
+				if(attack){
+					actionButtonsActive[0] = true;
+				} else {//only toggle button if the action is not attack
+					actionButtonsActive[0] = !actionButtonsActive[0];
+				}
 				actionButtonsActive[1] = false;
 				if(actionButtonsActive[0]){
 					if(attack){
 						//notice world that attack number has decreased
+						//levelReference.gameObject.GetComponent<ActionQueue>()
 						Debug.Log("notice world that attack number has decreased");
 
 					}
@@ -340,7 +345,11 @@ public class GUIControl : MonoBehaviour
 			if(inventoryActive!=-1&&itemTypes[inventory[windowID][inventoryActive]-1]!="protection"){
 				Texture secondAction = (attack) ? attackButtons[1] : benutzen;
 				if (GUI.Button (new Rect (96, 0, 32, 32), secondAction)) {
-					actionButtonsActive[1] = !actionButtonsActive[1];
+					if(attack){
+						actionButtonsActive[1] = true;
+					} else { //only toggle button if the action is not attack
+						actionButtonsActive[1] = !actionButtonsActive[1];
+					}
 					actionButtonsActive[0] = false;
 					if(actionButtonsActive[1]){
 

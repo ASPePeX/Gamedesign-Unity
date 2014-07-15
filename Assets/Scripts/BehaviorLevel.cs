@@ -290,8 +290,12 @@ public class BehaviorLevel : MonoBehaviour {
                     //if we click on an enemy in range of our active item which is a weapon
                 else if (_enemies[clickTilePosition.x, clickTilePosition.y] != null && Statics.MovingToTileCost(clickTilePosition, _activePlayer) <= _activePlayer.GetComponent<PlayerActions>().Items[_activePlayer.GetComponent<PlayerActions>().ActiveItem].GetComponent<ItemProperties>().RangeInActionpoints && _activePlayer.GetComponent<PlayerActions>().Items[_activePlayer.GetComponent<PlayerActions>().ActiveItem].GetComponent<ItemProperties>().isWeapon)
                 {
+
                     Debug.Log("Enemy in phaser range!");
                     actionQ.AddAction(_activePlayer, _activePlayer.GetComponent<PlayerActions>().Items[_activePlayer.GetComponent<PlayerActions>().ActiveItem], _enemies[clickTilePosition.x, clickTilePosition.y]);
+					//added by Konstantin
+					MainCamera.GetComponent<GUIControl>().receiveAttackFromWorld(_activePlayer, _activePlayer.GetComponent<PlayerActions>().Items[_activePlayer.GetComponent<PlayerActions>().ActiveItem], _enemies[clickTilePosition.x, clickTilePosition.y]);
+					//
                 }
                 else
                 {

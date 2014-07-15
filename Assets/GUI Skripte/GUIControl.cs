@@ -36,7 +36,7 @@ public class GUIControl : MonoBehaviour
 	private int[] ghostNumber = {5,5,5,5};
 	private int[] primaryWeapon = {5,5,5,5};
 	private int[] primaryProtection = {5,5,5,5};
-	private int[] inventoryPreSelected = {0,0,0,0};//in item properties speichern
+	private int[] inventoryPreSelected = {1,1,1,1};//in item properties speichern
 	private bool attack = false;
 	private int[] infectedDamage = {0,0,0,0};
 	private int infectionDamage = 25; //von gegner holen
@@ -67,6 +67,7 @@ public class GUIControl : MonoBehaviour
 	private PlayerActions[] playerReferences;
 	private BehaviorLevel levelReference;
 	private GameObject[] items;
+	private GameObject[] addAttack;
 
 	/*
 	 * Item ablegen zuruecknehmen
@@ -328,6 +329,7 @@ public class GUIControl : MonoBehaviour
 					if(attack){
 						//notice world that attack number has decreased
 						Debug.Log("notice world that attack number has decreased");
+
 					}
 					if(firstAction==ablegen){
 						int id = inventory[windowID][inventoryActive];
@@ -344,6 +346,7 @@ public class GUIControl : MonoBehaviour
 
 						if(attack){//nicht optimal
 							//notice world that attack number has increased
+							levelReference.gameObject.GetComponent<ActionQueue>().AddAction(addAttack[0],addAttack[1],addAttack[2]);
 							Debug.Log("notice world that attack number has increased");
 						}
 						if(secondAction==benutzen){
@@ -522,6 +525,14 @@ public class GUIControl : MonoBehaviour
 		for (int i=0; i<ghostNumber.Length; i++) {
 			ghostNumber[i] = 5;
 		}
+	}
+
+	public void receiveAttackFromWorld(GameObject from,GameObject item,GameObject to){
+		attack = true;
+		addAttack = new GameObject[3];
+		addAttack [0] = from;
+		addAttack [1] = item;
+		addAttack [2] = to;
 	}
 
 	private void walkStepFromActivePlayer(int apLoss){

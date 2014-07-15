@@ -157,6 +157,12 @@ public class GUIControl : MonoBehaviour
 			}	
 			
 			apPlayer[i] = playerReferences[i].ActionPoints;
+
+			int apUsed = levelReference.gameObject.GetComponent<ActionQueue>().SpentActionPointsForPlayer(players[i]);
+			if(apUsed!=-1){
+				apPlayer[i] -= apUsed;
+			}
+
 			hpPlayer[i] = playerReferences[i].HealthPoints;
 			primaryWeapon[i] = playerReferences[i].PrimaryWeapon;
 
@@ -332,7 +338,7 @@ public class GUIControl : MonoBehaviour
 				if(actionButtonsActive[0]){
 					if(attack){
 						//notice world that attack number has decreased
-						//levelReference.gameObject.GetComponent<ActionQueue>()
+						levelReference.gameObject.GetComponent<ActionQueue>().RemoveLastAction(addAttack[0],addAttack[1]);
 						Debug.Log("notice world that attack number has decreased");
 
 					}
@@ -542,6 +548,8 @@ public class GUIControl : MonoBehaviour
 		addAttack [0] = from;
 		addAttack [1] = item;
 		addAttack [2] = to;
+
+		inventoryActive = primaryWeapon [activePlayer];
 	}
 
 	private void walkStepFromActivePlayer(int apLoss){

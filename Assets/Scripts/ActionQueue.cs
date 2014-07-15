@@ -67,6 +67,31 @@ public class ActionQueue : MonoBehaviour
         }
     }
 
+    public void RemoveLastAction(GameObject player)
+    {
+        ActionEntry lastAction = new ActionEntry();
+        bool found = false;
+
+        foreach (ActionEntry ae in _actions)
+        {
+            if (ae.GoFrom.Equals(player))
+            {
+                lastAction = ae;
+                found = true;
+            }
+        }
+
+        if (found)
+        {
+            _actions.Remove(lastAction);
+            Debug.Log("Last player action removed");
+        }
+        else
+        {
+            Debug.Log("No player (last) player action found");
+        }
+    }
+
     public int SpentActionPointsForPlayer(GameObject player)
     {
         if (player.tag != "Player")

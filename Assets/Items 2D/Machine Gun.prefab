@@ -41,6 +41,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   RangeInActionpoints: 6
+  UsageCostInActionpoints: 3
   canHeal: 0
   healAmount: 0
   doesDesinfect: 0

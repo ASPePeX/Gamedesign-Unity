@@ -67,6 +67,27 @@ public class ActionQueue : MonoBehaviour
         }
     }
 
+    public int SpentActionPointsForPlayer(GameObject player)
+    {
+        if (player.tag != "Player")
+        {
+            Debug.LogError("Gameobject is not a Player");
+            return -1;
+        }
+
+        int spentAp = 0;
+
+        foreach (ActionEntry ae in _actions)
+        {
+            if (ae.GoFrom == player)
+            {
+                spentAp += ae.Item.GetComponent<ItemProperties>().UsageCostInActionpoints;
+            }
+        }
+
+        return spentAp;
+    }
+
     private void ExecuteAction(ActionEntry ae)
     {
         Debug.Log("Executing Action!");

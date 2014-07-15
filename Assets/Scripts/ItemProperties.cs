@@ -5,6 +5,7 @@ using System.Collections;
 public class ItemProperties : MonoBehaviour
 {
     public int RangeInActionpoints;
+    public int UsageCostInActionpoints;
     
     public bool canHeal;
     public int healAmount;

@@ -173,7 +173,7 @@ public class BehaviorLevel : MonoBehaviour {
             //If we have an active player ...
 	        else
 	        {
-                Debug.Log(CheckIfPlayerOnTile(clickTilePosition));
+                //Debug.Log(CheckIfPlayerOnTile(clickTilePosition));
 	            PlayerActions activePlayerScript = (PlayerActions) _activePlayer.GetComponent(typeof (PlayerActions));
                 
 				//if the gui sent us an item to drop
@@ -218,7 +218,8 @@ public class BehaviorLevel : MonoBehaviour {
 	            {
                     _dropItem = null;
                     activePlayerScript.ClearGhosts();
-                    
+                    actionQ.RemoveAllPlayerAction(_activePlayer);
+
 	                DrawMovement(clickTilePosition, activePlayerScript.ActionPoints, activePlayerScript.LastAction);
 	            }
 
@@ -288,14 +289,15 @@ public class BehaviorLevel : MonoBehaviour {
                     }
                 }
                     //if we click on an enemy in range of our active item which is a weapon
-                else if (_enemies[clickTilePosition.x, clickTilePosition.y] != null && Statics.MovingToTileCost(clickTilePosition, _activePlayer) <= _activePlayer.GetComponent<PlayerActions>().Items[_activePlayer.GetComponent<PlayerActions>().ActiveItem].GetComponent<ItemProperties>().RangeInActionpoints && _activePlayer.GetComponent<PlayerActions>().Items[_activePlayer.GetComponent<PlayerActions>().ActiveItem].GetComponent<ItemProperties>().isWeapon)
+                else if (_enemies[clickTilePosition.x, clickTilePosition.y] != null && Statics.MovingToTileCost(clickTilePosition, _activePlayer) <= _activePlayer.GetComponent<PlayerActions>().Items[_activePlayer.GetComponent<PlayerActions>().ActiveItem].GetComponent<ItemProperties>().RangeInActionpoints && _activePlayer.GetComponent<PlayerActions>().Items[_activePlayer.GetComponent<PlayerActions>().ActiveItem].GetComponent<ItemProperties>().isWeapon && _activePlayer.GetComponent<PlayerActions>().ActionPoints - actionQ.SpentActionPointsForPlayer(_activePlayer) >= _activePlayer.GetComponent<PlayerActions>().Items[_activePlayer.GetComponent<PlayerActions>().ActiveItem].GetComponent<ItemProperties>().UsageCostInActionpoints)
                 {
-
                     Debug.Log("Enemy in phaser range!");
                     actionQ.AddAction(_activePlayer, _activePlayer.GetComponent<PlayerActions>().Items[_activePlayer.GetComponent<PlayerActions>().ActiveItem], _enemies[clickTilePosition.x, clickTilePosition.y]);
 					//added by Konstantin
 					MainCamera.GetComponent<GUIControl>().receiveAttackFromWorld(_activePlayer, _activePlayer.GetComponent<PlayerActions>().Items[_activePlayer.GetComponent<PlayerActions>().ActiveItem], _enemies[clickTilePosition.x, clickTilePosition.y]);
 					//
+                    activePlayerScript.LastAction = true;
+                    DrawMovement(clickTilePosition, 1, false);
                 }
                 else
                 {

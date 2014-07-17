@@ -242,8 +242,9 @@ public class BehaviorLevel : MonoBehaviour {
                     //ToDo: Tell inventory that item has been dropped
                     Debug.Log(_activePlayer.name + " dropped " + _dropItem.name);
 
+                    activePlayerScript.RemoveItem(_dropItem);
 					//Added by Konstantin
-					MainCamera.GetComponent<GUIControl>().dropActionFromWorld();
+					//MainCamera.GetComponent<GUIControl>().dropActionFromWorld();
 					//
 
                     _dropItem = null;

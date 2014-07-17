@@ -188,6 +188,7 @@ public class PlayerActions : MonoBehaviour
             newGhost.name = itemtype;
             newGhost.GetComponent<SpriteRenderer>().color = Statics.SemiTransparent;
             _ghostItem = newGhost;
+            _ghostItem.SetActive(true);
 
             LastAction = true;
         }
@@ -266,7 +267,7 @@ public class PlayerActions : MonoBehaviour
             _items.Add(_ghostItem);
             //ToDo: Tell Inventory something changed
 
-            Destroy(_ghostItem);
+            _ghostItem.SetActive(false);
             _ghostItem = null;
         }
 

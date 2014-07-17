@@ -7,7 +7,7 @@ public static class Statics
     #region Basic level settings
 
     private const int _horizontalTiles = 40;
-    private const int _verticalTiles = 20;
+    private const int _verticalTiles = 24;
     private const int _tileSize = 32;
     private const int _actionPoints = 7;
 	//added by konstantin

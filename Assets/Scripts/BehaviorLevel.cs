@@ -244,7 +244,7 @@ public class BehaviorLevel : MonoBehaviour {
 
                     activePlayerScript.RemoveItem(_dropItem);
 					//Added by Konstantin
-					//MainCamera.GetComponent<GUIControl>().dropActionFromWorld();
+					MainCamera.GetComponent<GUIControl>().dropActionFromWorld();
 					//
 
                     _dropItem = null;

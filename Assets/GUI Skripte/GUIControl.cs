@@ -33,7 +33,7 @@ public class GUIControl : MonoBehaviour
 	private string[] itemNames;
 	private bool[] hasGhostItem = {false,false,false,false};
 	private int[] ghostNumber = {5,5,5,5};
-	private int[] primaryWeapon = {5,5,5,5};
+	private int[] primaryWeapon = {-1,-1,-1,-1};
 	private int[] primaryProtection = {5,5,5,5};
 	private int[] inventoryPreSelected = {1,1,1,1};//in item properties speichern
 	private bool attack = false;
@@ -333,7 +333,7 @@ public class GUIControl : MonoBehaviour
 					}
 				}
 			}
-			if(inventoryActive!=-1 && !items[inventory[windowID][inventoryActive]-1].GetComponent<ItemProperties>().isArmor){
+			if(inventoryActive!=-1 /*&& !items[inventory[windowID][inventoryActive]-1].GetComponent<ItemProperties>().isArmor*/){
 				Texture secondAction = (attack) ? attackButtons[1] : benutzen;
 				if (GUI.Button (new Rect (96, 0, 32, 32), secondAction)) {
 					if(attack){
@@ -504,11 +504,17 @@ public class GUIControl : MonoBehaviour
 	public void dropActionFromWorld(){
 		Debug.Log("drop success");
 		//item ghosten && actionbuttons hide
-		if (inventoryActive != -1) {
+		/*if (inventoryActive != -1) {
 			inventoryUsed[activePlayer,inventoryActive] = true;
 			inventoryActive = -1;
 			Array.Clear(actionButtonsActive,0,actionButtonsActive.Length);
+		}*/
+		if(inventoryActive == primaryWeapon[activePlayer]){
+			primaryWeapon[activePlayer] = -1;
+			playerReferences[activePlayer].PrimaryWeapon = -1;
 		}
+		inventoryActive = -1;
+		Array.Clear(actionButtonsActive,0,actionButtonsActive.Length);
 	}
 
 	public void useActionFromWorld(){

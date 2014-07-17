@@ -38,7 +38,7 @@ public class GUIControl : MonoBehaviour
 	private int[] inventoryPreSelected = {1,1,1,1};//in item properties speichern
 	private bool attack = false;
 	private int[] infectedDamage = {0,0,0,0};
-	private int infectionDamage = 25; //von gegner holen
+	private int infectionDamage = 100; //von gegner holen
 	private float[] infectedTimer = {0.0f,0.0f,0.0f,0.0f};
 	private Texture2D whiteTex;
 
@@ -276,9 +276,24 @@ public class GUIControl : MonoBehaviour
 			if(hpDamage<0){
 				hpDamage=0.0f;
 			}
-			fillColor = new Color(1-hpDamage,hpDamage,0);
+			Debug.Log(hpDamage);
+			if(hpDamage<0.5f){
+				fillColor = new Color(1,(2*hpDamage),0);
+			} else if(hpDamage>0.5f){
+				fillColor = new Color(2*(1-hpDamage),1,0);
+			} else {
+				fillColor = new Color(1,1,0);
+			}
+			//fillColor = new Color(1-hpDamage,hpDamage,0);
 		} else {
-			fillColor = new Color(1-(hpPlayer[windowID]/100.0f),(hpPlayer[windowID]/100.0f),0);
+			if(hpPlayer[windowID]<50){
+				fillColor = new Color(1,(2*(hpPlayer[windowID]/100.0f)),0);
+			} else if(hpPlayer[windowID]>50){
+				fillColor = new Color(2*(1-(hpPlayer[windowID]/100.0f)),1,0);
+			} else {
+				fillColor = new Color(1,1,0);
+			}
+			//fillColor = new Color(1-(hpPlayer[windowID]/100.0f),(hpPlayer[windowID]/100.0f),0);
 		}
 
 		Texture2D fillTex = createBlankTexture (fillColor);

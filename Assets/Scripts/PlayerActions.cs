@@ -235,7 +235,7 @@ public class PlayerActions : MonoBehaviour
 	    LastAction = false;
 
 	    GetComponent<SpriteRenderer>().color = playerColor;
-        HealthPoints = Statics.HealthPoints -50;
+		HealthPoints = Statics.HealthPoints;
 
         RoundStart();
 	}
